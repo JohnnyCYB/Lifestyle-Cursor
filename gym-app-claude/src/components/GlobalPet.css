@@ -23,11 +23,11 @@
 }
 
 .global-pet.pet-idle .monster-svg {
-  animation: pet-breathe 2.6s ease-in-out infinite;
+  animation: none;
 }
 
 .global-pet.pet-walking .monster-svg {
-  animation: pet-walk-bob 0.44s ease-in-out infinite;
+  animation: none;
 }
 
 .global-pet.facing-left .monster-svg {
@@ -35,7 +35,12 @@
 }
 
 .global-pet-stage-3 {
-  filter: drop-shadow(0 32px 38px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 24px rgba(250, 204, 21, 0.12));
+  filter: drop-shadow(0 36px 42px rgba(0, 0, 0, 0.58)) drop-shadow(0 0 32px rgba(250, 204, 21, 0.16));
+}
+
+.global-pet-stage-3 .global-pet-sprite {
+  transform: scale(1.12);
+  transform-origin: center bottom;
 }
 
 .global-pet-ground {
@@ -194,192 +199,255 @@
 .emote-silly .emote-zoom.delay-1 { top: 48%; animation-delay: 0.1s; opacity: 0.7; }
 .emote-silly .emote-zoom.delay-2 { top: 56%; animation-delay: 0.2s; opacity: 0.45; }
 
-.aura {
-  fill: rgba(255, 255, 255, 0.08);
+/* Fantasy-realism monster rendering */
+.monster-svg {
+  overflow: visible;
+}
+
+.monster-svg .body-base,
+.monster-svg .head .body-base,
+.monster-svg path.body-base {
+  stroke: rgba(6, 8, 14, 0.92);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.monster-svg .body-highlight {
+  stroke: none;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.monster-svg .body-shadow {
+  stroke: none;
+}
+
+.monster-svg .scale-lines path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.monster-svg .circuit,
+.monster-svg .abs,
+.monster-svg .crack,
+.monster-svg .crack-glow,
+.monster-svg .teeth,
+.monster-svg .brow,
+.monster-svg .grin,
+.monster-svg .mouth,
+.monster-svg .wing-vein,
+.monster-svg .armor-rim {
+  fill: none;
+}
+
+.monster-svg .teeth,
+.monster-svg .brow {
+  stroke: #fef3c7;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+
+.monster-svg .circuit,
+.monster-svg .spine {
+  stroke: #22d3ee;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.8));
+}
+
+.monster-svg .crack-glow {
+  filter: drop-shadow(0 0 8px rgba(190, 242, 100, 0.75));
+}
+
+.monster-svg .rim-light {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.monster-svg .eye-socket {
+  fill: rgba(0, 0, 0, 0.65);
+  stroke: rgba(0, 0, 0, 0.9);
   stroke-width: 2;
 }
 
-.aura.fire { fill: rgba(255, 122, 69, 0.14); stroke: rgba(250, 204, 21, 0.22); }
-.aura.jungle { fill: rgba(192, 132, 252, 0.14); stroke: rgba(250, 204, 21, 0.2); }
-.aura.cyber { fill: rgba(34, 211, 238, 0.14); stroke: rgba(96, 165, 250, 0.32); }
-.aura.stone { fill: rgba(163, 230, 53, 0.12); stroke: rgba(148, 163, 184, 0.3); }
-.aura.phoenix { fill: rgba(251, 113, 133, 0.15); stroke: rgba(253, 230, 138, 0.28); }
-
-.fire-fill,
-.head,
-.neck,
-.snout,
-.limb,
-.muscle,
-.forearm,
-.tail,
-.wing-nub,
-.body,
-.head-group .head {
-  fill: #c2410c;
-  stroke: rgba(80, 10, 18, 0.82);
-  stroke-width: 4;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.monkey-fill,
-.shoulder {
-  fill: #a8662c;
-  stroke: rgba(40, 22, 10, 0.85);
-  stroke-width: 4;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.monkey-belly,
-.muzzle,
-.ear {
-  fill: #f4b56d;
-  stroke: rgba(58, 29, 10, 0.55);
-  stroke-width: 3;
-}
-
-.wolf-fill,
-.shoulder.wolf-fill,
-.collar {
-  fill: #1e40af;
-  stroke: rgba(7, 18, 48, 0.9);
-  stroke-width: 4;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.wolf-secondary {
-  fill: rgba(15, 23, 42, 0.96);
-  stroke: rgba(34, 211, 238, 0.5);
-  stroke-width: 3;
-  stroke-linejoin: round;
-}
-
-.stone-fill,
-.head.stone-fill,
-.body.stone-fill,
-.arm {
-  fill: #64748b;
-  stroke: rgba(15, 23, 42, 0.85);
-  stroke-width: 4;
-  stroke-linejoin: round;
-}
-
-.stone-secondary,
-.arm.stone-secondary {
-  fill: #475569;
-  stroke: rgba(15, 23, 42, 0.82);
-  stroke-width: 4;
-}
-
-.phoenix-fill {
-  fill: #ea580c;
-  stroke: rgba(124, 45, 18, 0.8);
-  stroke-width: 4;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.belly,
-.beak {
-  fill: #fbbf24;
-  stroke: rgba(116, 63, 12, 0.45);
-  stroke-width: 3;
-}
-
-.detail-line,
-.brow,
-.teeth,
-.claws,
-.wing-bone,
-.circuit,
-.energy-ring,
-.stone-lines,
-.mouth,
-.confident,
-.bandana {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.detail-line,
-.brow,
-.teeth,
-.claws path,
-.wing-bone,
-.mouth,
-.confident {
-  stroke: rgba(255, 239, 196, 0.9);
-  stroke-width: 5;
-}
-
-.circuit,
-.energy-ring {
-  stroke: rgba(34, 211, 238, 0.95);
-  stroke-width: 4;
-  fill: none;
-}
-
-.stone-lines {
-  stroke: rgba(226, 232, 240, 0.45);
-  stroke-width: 4;
-  fill: none;
-}
-
-.wing {
-  fill: rgba(185, 38, 40, 0.58);
-  stroke: rgba(255, 218, 119, 0.65);
-  stroke-width: 4;
-  stroke-linejoin: round;
-}
-
-.wing.fire { fill: rgba(220, 38, 38, 0.55); }
-
-.horn,
-.tuft,
-.hair,
-.flame-crest {
-  fill: #d97706;
-  stroke: rgba(114, 67, 22, 0.58);
-  stroke-width: 3;
-  stroke-linejoin: round;
-}
-
-.eye {
-  fill: #fef08a;
-  stroke: #111827;
-  stroke-width: 3;
-}
-
-.eye.glowing {
-  fill: #fff7ad;
-  filter: drop-shadow(0 0 10px #fde047) drop-shadow(0 0 18px #38bdf8);
-}
-
-.armor path:first-child,
-.armor .plate,
-.wraps path {
-  fill: rgba(33, 39, 54, 0.88);
-  stroke: rgba(148, 163, 184, 0.86);
-  stroke-width: 3;
-}
-
-.armor path:not(:first-child):not(.plate) {
-  fill: none;
-  stroke: rgba(250, 204, 21, 0.68);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-
-.crystals path,
-.burst path,
-.ember,
-.fire-fx path {
-  stroke: rgba(255, 255, 255, 0.35);
+.monster-svg .eye-iris {
+  fill: #f59e0b;
+  stroke: #1c1917;
   stroke-width: 2;
+}
+
+.monster-svg .eye-pupil {
+  fill: #0c0a09;
+  stroke: none;
+}
+
+.monster-svg .eye-shine {
+  fill: #ffffff;
+  stroke: none;
+  opacity: 0.95;
+}
+
+.monster-svg .eye-glow-ring {
+  fill: none;
+  stroke: #fde047;
+  stroke-width: 2;
+  opacity: 0.75;
+  filter: drop-shadow(0 0 10px #fbbf24);
+}
+
+.monster-svg .claws path {
+  fill: #1e293b;
+  stroke: #e2e8f0;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.monster-svg .embers circle {
+  stroke: none;
+  animation: ember-flicker 1.2s ease-in-out infinite alternate;
+}
+
+.monster-svg .embers circle:nth-child(2n) {
+  animation-delay: 0.25s;
+}
+
+.monster-svg .embers circle:nth-child(3n) {
+  animation-delay: 0.5s;
+}
+
+.monster-svg .flame {
+  stroke: none;
+  animation: flame-pulse 0.85s ease-in-out infinite alternate;
+}
+
+.monster-svg .fx-aura {
+  stroke: none;
+  animation: aura-breathe 2.8s ease-in-out infinite;
+}
+
+.monster-svg.s3 .body-shell {
+  filter: drop-shadow(0 6px 0 rgba(0, 0, 0, 0.25));
+}
+
+.monster-svg.power-mood,
+.global-pet.reaction-power .monster-svg,
+.global-pet.reaction-victory .monster-svg {
+  filter: saturate(1.2) brightness(1.08);
+}
+
+@keyframes ember-flicker {
+  0% { opacity: 0.55; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1.15); }
+}
+
+@keyframes flame-pulse {
+  0% { opacity: 0.82; }
+  100% { opacity: 1; }
+}
+
+@keyframes aura-breathe {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+
+.emote-power .emote-impact {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: 3px;
+  height: 48%;
+  background: linear-gradient(180deg, transparent, #fde047, transparent);
+  transform: translate(-50%, -50%) rotate(-24deg);
+  animation: impact-flash 0.35s ease-in-out infinite alternate;
+}
+
+.emote-power .emote-impact::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: rotate(48deg);
+  background: inherit;
+}
+
+.emote-victory .emote-gold-ring {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 95%;
+  height: 70%;
+  border: 3px solid rgba(250, 204, 21, 0.75);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: gold-ring 0.55s ease-in-out infinite alternate;
+  box-shadow: 0 0 28px rgba(250, 204, 21, 0.45);
+}
+
+@keyframes impact-flash {
+  0% { opacity: 0.4; scale: 0.92; }
+  100% { opacity: 1; scale: 1.05; }
+}
+
+@keyframes gold-ring {
+  0% { scale: 0.88; opacity: 0.55; }
+  100% { scale: 1.1; opacity: 1; }
+}
+
+/* Pet-specific idle motion */
+.global-pet-dragon.pet-idle .global-pet-sprite {
+  animation: dragon-idle 2.5s ease-in-out infinite;
+}
+
+.global-pet-monkey.pet-idle .global-pet-sprite {
+  animation: monkey-idle 1.8s ease-in-out infinite;
+}
+
+.global-pet-wolf.pet-idle .global-pet-sprite {
+  animation: wolf-idle 0.9s ease-in-out infinite;
+}
+
+.global-pet-titan.pet-idle .global-pet-sprite {
+  animation: titan-idle 2.8s ease-in-out infinite;
+}
+
+.global-pet-phoenix.pet-idle .global-pet-sprite {
+  animation: phoenix-idle 2.2s ease-in-out infinite;
+}
+
+.global-pet-dragon.pet-walking .monster-svg {
+  animation: wing-flap 0.5s ease-in-out infinite;
+}
+
+.global-pet-phoenix.pet-walking .monster-svg {
+  animation: wing-flap 0.38s ease-in-out infinite;
+}
+
+@keyframes dragon-idle {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -7px; }
+}
+
+@keyframes monkey-idle {
+  0%, 100% { translate: 0 0 rotate(0); }
+  50% { translate: 0 -9px rotate(2deg); }
+}
+
+@keyframes wolf-idle {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 3px -3px; }
+}
+
+@keyframes titan-idle {
+  0%, 100% { translate: 0 0; scale: 1; }
+  50% { translate: 0 -5px; scale: 1.02; }
+}
+
+@keyframes phoenix-idle {
+  0%, 100% { translate: 0 -4px; }
+  50% { translate: 0 -12px; }
 }
 
 .reaction-power .monster-svg {

@@ -12,6 +12,7 @@ export const companions = [
     mood: 'Fierce',
     palette: ['#ff7a45', '#ffd166', '#7b2d26', '#fef3c7'],
     stages: ['Hatchling', 'Drake', 'Armored Wyvern', 'Buff Ancient Dragon'],
+    stageShort: ['Hatchling', 'Drake', 'Wyvern', 'Ancient'],
   },
   {
     id: 'monkey',
@@ -24,6 +25,7 @@ export const companions = [
     mood: 'Hyped',
     palette: ['#c084fc', '#f59e0b', '#3b2415', '#fef08a'],
     stages: ['Gym Monkey', 'Agile Climber', 'Power Ape', 'Buff Champion'],
+    stageShort: ['Gym Monkey', 'Climber', 'Power Ape', 'Champion'],
   },
   {
     id: 'wolf',
@@ -36,6 +38,7 @@ export const companions = [
     mood: 'Locked in',
     palette: ['#60a5fa', '#22d3ee', '#172554', '#e0f2fe'],
     stages: ['Neon Pup', 'Runner', 'Armored Wolf', 'Alpha Mech Wolf'],
+    stageShort: ['Neon Pup', 'Runner', 'Armored', 'Alpha Mech'],
   },
   {
     id: 'titan',
@@ -48,6 +51,7 @@ export const companions = [
     mood: 'Solid',
     palette: ['#a3e635', '#94a3b8', '#334155', '#f8fafc'],
     stages: ['Pebble Buddy', 'Training Golem', 'Guardian', 'Buff Titan'],
+    stageShort: ['Pebble', 'Training', 'Guardian', 'Titan'],
   },
   {
     id: 'phoenix',
@@ -60,6 +64,7 @@ export const companions = [
     mood: 'Radiant',
     palette: ['#fb7185', '#f97316', '#7c2d12', '#fde68a'],
     stages: ['Spark Chick', 'Flare Raptor', 'Solar Phoenix', 'Mythic Firelord'],
+    stageShort: ['Spark', 'Flare', 'Solar', 'Firelord'],
   },
 ]
 

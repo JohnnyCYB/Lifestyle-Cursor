@@ -51,6 +51,7 @@ function PetEmotes({ mood, facing }) {
         <span className="emote-aura-ring" />
         <span className="emote-flex">💪</span>
         <span className="emote-shockwave" />
+        <span className="emote-impact" />
         <span className="emote-zap">⚡</span>
       </motion.div>
     )
@@ -63,7 +64,12 @@ function PetEmotes({ mood, facing }) {
         <span className="emote-star delay-1">★</span>
         <span className="emote-star delay-2">★</span>
         <span className="emote-star delay-3">★</span>
-        {mood === 'victory' && <span className="emote-burst">✦</span>}
+        {mood === 'victory' && (
+          <>
+            <span className="emote-burst">✦</span>
+            <span className="emote-gold-ring" />
+          </>
+        )}
       </motion.div>
     )
   }
@@ -146,10 +152,21 @@ export default function GlobalPet({
   useEffect(() => () => window.clearTimeout(moveTimerRef.current), [])
 
   const mood = reaction === 'idle' ? expression : reaction
-  const size = useMemo(() => Math.min(300, 118 + stageIndex * 42), [stageIndex])
-  const springStiffness = isMoving ? 88 : 62
+  const size = useMemo(() => Math.min(380, 148 + stageIndex * 58), [stageIndex])
+  const springStiffness = isMoving ? (companion.id === 'wolf' ? 110 : companion.id === 'titan' ? 55 : 85) : 62
+  const springDamping = companion.id === 'titan' ? 18 : 14
   const scale =
-    mood === 'victory' ? 1.18 : mood === 'celebrate' ? 1.12 : mood === 'power' ? 1.08 : mood === 'silly' ? 1.05 : 1
+    mood === 'victory' ? 1.22 : mood === 'celebrate' ? 1.14 : mood === 'power' ? 1.1 : mood === 'silly' ? 1.06 : 1
+
+  const hopByPet = {
+    dragon: [0, -18, 0, -11, 0],
+    monkey: [0, -22, 0, -14, 0],
+    wolf: [0, -6, -4, -6, 0],
+    titan: [0, -12, 0, -12, 0],
+    phoenix: [0, -14, -6, -14, 0],
+  }
+  const hopY = hopByPet[companion.id] ?? hopByPet.dragon
+  const hopDuration = companion.id === 'wolf' ? 0.28 : companion.id === 'titan' ? 0.55 : 0.42
 
   if (!petCanMove) return null
 
@@ -169,14 +186,14 @@ export default function GlobalPet({
         top: `${position.y}%`,
         scale,
       }}
-      transition={{ type: 'spring', stiffness: springStiffness, damping: 14, mass: 0.9 }}
+      transition={{ type: 'spring', stiffness: springStiffness, damping: springDamping, mass: companion.id === 'titan' ? 1.15 : 0.88 }}
       aria-label={`${companion.name}, your roaming ${companion.species}`}
     >
       <PetEmotes mood={mood} facing={facing} />
       <motion.div
         className="global-pet-sprite"
-        animate={isMoving ? { y: [0, -12, 0, -7, 0] } : { y: 0 }}
-        transition={{ duration: 0.44, ease: 'easeOut' }}
+        animate={isMoving ? { y: hopY } : { y: 0 }}
+        transition={{ duration: hopDuration, ease: 'easeOut', repeat: isMoving ? Infinity : 0, repeatType: 'loop' }}
       >
         <PetArt id={companion.id} stageIndex={stageIndex} mood={mood} />
       </motion.div>

@@ -64,7 +64,7 @@ export default function PetsView({ profile, companion, stageIndex, stageName, on
             style={{ '--card-accent': pet.palette[0], '--card-glow': pet.palette[1] }}
           >
             <header className="pet-card-header">
-              <PetAvatar companion={pet} stageIndex={profile.petType === pet.id ? stageIndex : 0} size="small" />
+              <PetAvatar companion={pet} stageIndex={profile.petType === pet.id ? stageIndex : 0} size="card-hero" />
               <div>
                 <span className="pet-card-rarity">{pet.archetype}</span>
                 <h3>{pet.name}</h3>
@@ -75,13 +75,20 @@ export default function PetsView({ profile, companion, stageIndex, stageName, on
             <p className="pet-card-habit">
               <strong>Habit:</strong> {pet.habit}
             </p>
-            <div className="stage-preview" aria-label={`${pet.name} evolution line`}>
-              {pet.stages.map((stage, index) => (
-                <span key={stage} title={stage} className={index === 3 ? 'stage-final' : ''}>
-                  <PetAvatar companion={pet} stageIndex={index} size="tiny" />
-                  <small>{stage}</small>
-                </span>
-              ))}
+            <div className="stage-preview-grid" aria-label={`${pet.name} evolution line`}>
+              {pet.stages.map((stage, index) => {
+                const label = pet.stageShort?.[index] ?? stage
+                return (
+                  <div
+                    key={stage}
+                    className={['stage-preview-cell', index === 3 ? 'stage-final' : ''].filter(Boolean).join(' ')}
+                    title={stage}
+                  >
+                    <PetAvatar companion={pet} stageIndex={index} size="preview" />
+                    <span className="stage-label">{label}</span>
+                  </div>
+                )
+              })}
             </div>
             <button
               className={pet.id === profile.petType ? 'primary-button' : 'secondary-button'}
