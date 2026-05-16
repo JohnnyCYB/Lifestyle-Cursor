@@ -1,0 +1,117 @@
+.pet-art-shell {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.pet-art-shell .monster-svg,
+.pet-art-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pet-art-image {
+  object-fit: contain;
+  object-position: center bottom;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 22px 26px rgba(0, 0, 0, 0.42));
+  transform-origin: center bottom;
+}
+
+.pet-art-roaming .pet-art-image,
+.global-pet .pet-art-image {
+  filter:
+    drop-shadow(0 28px 32px rgba(0, 0, 0, 0.58))
+    drop-shadow(0 0 22px rgba(147, 51, 234, 0.18));
+}
+
+.pet-art-hero .pet-art-image {
+  filter:
+    drop-shadow(0 34px 38px rgba(0, 0, 0, 0.58))
+    drop-shadow(0 0 34px rgba(168, 85, 247, 0.24));
+}
+
+.pet-art-preview .pet-art-image {
+  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.45));
+}
+
+.pet-art-stage-3 .pet-art-image {
+  transform: scale(1.08);
+  filter:
+    drop-shadow(0 30px 34px rgba(0, 0, 0, 0.58))
+    drop-shadow(0 0 30px rgba(250, 204, 21, 0.28));
+}
+
+.global-pet.facing-left .pet-art-image {
+  transform: scaleX(-1);
+}
+
+.global-pet.facing-left .pet-art-stage-3 .pet-art-image {
+  transform: scaleX(-1) scale(1.08);
+}
+
+.reaction-happy .pet-art-image,
+.reaction-curious .pet-art-image {
+  animation: pet-image-bounce 0.9s ease-in-out infinite alternate;
+}
+
+.reaction-power .pet-art-image,
+.reaction-celebrate .pet-art-image,
+.reaction-victory .pet-art-image {
+  animation: pet-image-power 0.58s ease-in-out infinite alternate;
+}
+
+.reaction-silly .pet-art-image {
+  animation: pet-image-silly 0.7s ease-in-out infinite alternate;
+}
+
+.pet-art-shell::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  z-index: -1;
+  width: 72%;
+  height: 24%;
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgba(168, 85, 247, 0.18), transparent 68%);
+  transform: translateX(-50%);
+  opacity: 0.75;
+}
+
+.pet-art-asset-missing::after {
+  content: 'Add asset: /assets/pets/' attr(data-pet-id) '/stage-' attr(data-stage-index) '.webp';
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  display: none;
+  width: max-content;
+  max-width: 220px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: rgba(226, 232, 240, 0.78);
+  background: rgba(15, 23, 42, 0.82);
+  font-size: 0.58rem;
+  line-height: 1;
+  transform: translateX(-50%);
+}
+
+@keyframes pet-image-bounce {
+  0% { translate: 0 0; rotate: -1deg; }
+  100% { translate: 0 -9px; rotate: 1deg; }
+}
+
+@keyframes pet-image-power {
+  0% { translate: 0 0; scale: 1; filter: saturate(1); }
+  100% { translate: 0 -8px; scale: 1.04; filter: saturate(1.24) brightness(1.08); }
+}
+
+@keyframes pet-image-silly {
+  0% { translate: 0 0; rotate: -6deg; }
+  100% { translate: 0 -8px; rotate: 6deg; }
+}
