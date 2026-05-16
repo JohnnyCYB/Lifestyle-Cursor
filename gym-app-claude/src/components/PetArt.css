@@ -6,7 +6,8 @@
   min-width: 0;
   min-height: 0;
   overflow: visible;
-  isolation: auto;
+  isolation: isolate;
+  transform-origin: center bottom;
 }
 
 .pet-art-shell .monster-svg,
@@ -21,7 +22,7 @@
   object-position: center bottom;
   user-select: none;
   -webkit-user-drag: none;
-  mix-blend-mode: multiply;
+  mix-blend-mode: normal;
   filter:
     saturate(1.08)
     contrast(1.05)
@@ -33,7 +34,7 @@
 .global-pet .pet-art-image {
   max-width: 100%;
   max-height: 100%;
-  mix-blend-mode: multiply;
+  mix-blend-mode: normal;
   filter:
     saturate(1.12)
     contrast(1.04)
@@ -75,6 +76,14 @@
     drop-shadow(0 0 24px rgba(250, 204, 21, 0.2));
 }
 
+.motion-ok .pet-art-shell[data-pet-id='dragon'] { animation: dragon-idle 3.4s ease-in-out infinite; }
+.motion-ok .pet-art-shell[data-pet-id='panda'] { animation: panda-idle 3.8s ease-in-out infinite; }
+.motion-ok .pet-art-shell[data-pet-id='raptor'] { animation: raptor-idle 3s ease-in-out infinite; }
+.motion-ok .pet-art-shell[data-pet-id='monkey'] { animation: monkey-idle 2.7s ease-in-out infinite; }
+.motion-ok .pet-art-shell[data-pet-id='wolf'] { animation: wolf-idle 2.9s ease-in-out infinite; }
+.motion-ok .pet-art-shell[data-pet-id='titan'] { animation: titan-idle 4.2s ease-in-out infinite; }
+.motion-ok .pet-art-shell[data-pet-id='bull'] { animation: bull-idle 3.2s ease-in-out infinite; }
+
 .global-pet.facing-left .pet-art-image {
   transform: scaleX(-1);
 }
@@ -112,6 +121,27 @@
   opacity: 0.85;
 }
 
+.pet-art-shell[data-pet-id='dragon']::before {
+  background: radial-gradient(ellipse, rgba(249, 115, 22, 0.2), transparent 70%);
+}
+
+.pet-art-shell[data-pet-id='panda']::before,
+.pet-art-shell[data-pet-id='raptor']::before {
+  background: radial-gradient(ellipse, rgba(168, 85, 247, 0.24), transparent 70%);
+}
+
+.pet-art-shell[data-pet-id='wolf']::before {
+  background: radial-gradient(ellipse, rgba(56, 189, 248, 0.2), transparent 70%);
+}
+
+.pet-art-shell[data-pet-id='titan']::before {
+  background: radial-gradient(ellipse, rgba(132, 204, 22, 0.18), transparent 70%);
+}
+
+.pet-art-shell[data-pet-id='bull']::before {
+  background: radial-gradient(ellipse, rgba(251, 146, 60, 0.24), transparent 70%);
+}
+
 .pet-art-asset-missing::after {
   content: 'Add asset: /assets/pets/' attr(data-pet-id) '/stage-' attr(data-stage-index) '.webp';
   position: absolute;
@@ -127,6 +157,45 @@
   font-size: 0.58rem;
   line-height: 1;
   transform: translateX(-50%);
+}
+
+@keyframes dragon-idle {
+  0%, 100% { translate: 0 0; rotate: -0.6deg; scale: 1; }
+  45% { translate: 0 -5px; rotate: 0.8deg; scale: 1.012; }
+  62% { translate: 0 -2px; rotate: -0.2deg; scale: 1.006; }
+}
+
+@keyframes panda-idle {
+  0%, 100% { translate: 0 0; rotate: -0.4deg; }
+  35% { translate: 0 -3px; rotate: 1.1deg; }
+  70% { translate: 0 -1px; rotate: -1deg; }
+}
+
+@keyframes raptor-idle {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  38% { translate: 2px -4px; rotate: -1.2deg; }
+  72% { translate: -1px -1px; rotate: 0.7deg; }
+}
+
+@keyframes monkey-idle {
+  0%, 100% { translate: 0 0; rotate: -1deg; }
+  50% { translate: 0 -7px; rotate: 1.2deg; }
+}
+
+@keyframes wolf-idle {
+  0%, 100% { translate: -2px 0; scale: 1; }
+  50% { translate: 3px -3px; scale: 1.01; }
+}
+
+@keyframes titan-idle {
+  0%, 100% { translate: 0 0; scale: 1; }
+  50% { translate: 0 -2px; scale: 1.008; }
+}
+
+@keyframes bull-idle {
+  0%, 100% { translate: -1px 0; rotate: -0.4deg; }
+  42% { translate: 2px -4px; rotate: 0.7deg; }
+  75% { translate: 0 0; rotate: 0deg; }
 }
 
 @keyframes pet-image-bounce {
