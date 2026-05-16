@@ -9,14 +9,17 @@ const petStyles = {
   phoenix: { title: 'phoenix', base: ['#fff08a', '#fb6a3a', '#7c1d12'], accent: '#fde047', glow: '#ef4444', wing: true, flame: true, tail: 'feather', beak: true },
 }
 
-export const petAssetPath = (id, stageIndex) => `/assets/pets/${id}/stage-${Math.max(0, Math.min(3, stageIndex))}.webp`
+const assetExtensions = ['webp', 'png', 'svg']
+
+export const petAssetPath = (id, stageIndex, extension = 'webp') => `/assets/pets/${id}/stage-${Math.max(0, Math.min(3, stageIndex))}.${extension}`
 
 export default function PetArt({ id, stageIndex, mood = 'idle', variant = 'preview' }) {
   const uid = useId().replace(/:/g, '')
   const stage = Math.max(0, Math.min(3, stageIndex))
   const style = petStyles[id] ?? petStyles.dragon
-  const [assetMissing, setAssetMissing] = useState(false)
-  const src = petAssetPath(id, stage)
+  const [assetIndex, setAssetIndex] = useState(0)
+  const assetMissing = assetIndex >= assetExtensions.length
+  const src = assetMissing ? '' : petAssetPath(id, stage, assetExtensions[assetIndex])
 
   return (
     <span
@@ -30,7 +33,7 @@ export default function PetArt({ id, stageIndex, mood = 'idle', variant = 'previ
           src={src}
           alt={`${style.title} stage ${stage + 1}`}
           draggable="false"
-          onError={() => setAssetMissing(true)}
+          onError={() => setAssetIndex((current) => current + 1)}
         />
       ) : (
         <ConceptMonster id={id} uid={uid} stage={stage} mood={mood} style={style} />
