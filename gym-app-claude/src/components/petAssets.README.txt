@@ -1,0 +1,1 @@
+Generated pet assets are wired through PetArt.jsx. Final art assets are handled by generatedPetAssets in petAssets.js and still fall back to /public/assets/pets and SVG code art if needed.
