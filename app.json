@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Life RPG",
+    "slug": "life-rpg",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "liferpg",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.liferpg.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Scan barcodes on nutrition labels.",
+        "NSPhotoLibraryUsageDescription": "Attach meal photos."
+      }
+    },
+    "android": {
+      "backgroundColor": "#0f172a",
+      "package": "com.liferpg.app",
+      "permissions": ["android.permission.CAMERA"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Life RPG to use the camera to scan barcodes.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ]
+    ]
+  }
+}
