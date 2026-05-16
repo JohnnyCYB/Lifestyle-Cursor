@@ -54,17 +54,17 @@ export const companions = [
     stageShort: ['Pebble', 'Training', 'Guardian', 'Titan'],
   },
   {
-    id: 'phoenix',
-    name: 'Nova',
-    species: 'Phoenix',
-    archetype: 'Recovery companion',
-    personality: 'Comeback king — shines brightest after rest days and bounce-backs.',
-    habit: 'Sleep, recovery & nutrition rebound',
-    trait: 'A flame bird that gets sharper, brighter, and more legendary after every comeback.',
-    mood: 'Radiant',
-    palette: ['#fb7185', '#f97316', '#7c2d12', '#fde68a'],
-    stages: ['Spark Chick', 'Flare Raptor', 'Solar Phoenix', 'Mythic Firelord'],
-    stageShort: ['Spark', 'Flare', 'Solar', 'Firelord'],
+    id: 'bull',
+    name: 'Brutus',
+    species: 'Molten Bull',
+    archetype: 'Power companion',
+    personality: 'Explosive lifter — rewards leg days, max effort sets, and showing up angry in a good way.',
+    habit: 'Heavy lifts, confidence & intensity',
+    trait: 'A molten bull line that evolves into an armored minotaur-style gym beast.',
+    mood: 'Charged',
+    palette: ['#fb923c', '#a855f7', '#1f1028', '#fed7aa'],
+    stages: ['Spark Calf', 'Iron Bull', 'Armored Guardian', 'Molten Minotaur'],
+    stageShort: ['Calf', 'Bull', 'Guardian', 'Minotaur'],
   },
   {
     id: 'raptor',
@@ -80,6 +80,20 @@ export const companions = [
     stageShort: ['Shardling', 'Blade', 'Apex', 'Void Apex'],
     unlockAt: 3500,
     special: true,
+  },
+  {
+    id: 'phoenix',
+    name: 'Nova',
+    species: 'Phoenix',
+    archetype: 'Coming soon',
+    personality: 'Recovery companion is being reworked so the art matches the rest of the roster.',
+    habit: 'Sleep, recovery & nutrition rebound',
+    trait: 'Coming back after we generate a cleaner phoenix line.',
+    mood: 'Radiant',
+    palette: ['#fb7185', '#f97316', '#7c2d12', '#fde68a'],
+    stages: ['Spark Chick', 'Flare Raptor', 'Solar Phoenix', 'Mythic Firelord'],
+    stageShort: ['Spark', 'Flare', 'Solar', 'Firelord'],
+    comingSoon: true,
   },
 ]
 
@@ -192,7 +206,8 @@ export function getNextEvolution(points) {
 }
 
 export function mergeProfile(savedProfile) {
-  const nextPetType = companions.some((pet) => pet.id === savedProfile?.petType) ? savedProfile.petType : defaultProfile.petType
+  const selectedPet = companions.find((pet) => pet.id === savedProfile?.petType && !pet.comingSoon)
+  const nextPetType = selectedPet?.id ?? defaultProfile.petType
   return {
     ...defaultProfile,
     ...savedProfile,
