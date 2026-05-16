@@ -1,0 +1,101 @@
+.pet-card-special {
+  border-color: rgba(168, 85, 247, 0.75);
+  background:
+    radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.24), transparent 34%),
+    linear-gradient(165deg, rgba(88, 28, 135, 0.3), var(--color-panel));
+}
+
+.special-edition-banner {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #fef3c7;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.92), rgba(245, 158, 11, 0.92));
+  box-shadow: 0 0 28px rgba(168, 85, 247, 0.34);
+  font-size: 0.68rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.pet-card-locked {
+  border-style: dashed;
+}
+
+.pet-card-locked .pet-card-header,
+.pet-card-locked .stage-preview-grid,
+.pet-card-locked .pet-card-personality,
+.pet-card-locked .pet-card-habit {
+  opacity: 0.74;
+}
+
+.pet-avatar-locked .pet-art-shell {
+  filter: grayscale(0.35) brightness(0.75);
+}
+
+.pet-lock-overlay {
+  position: absolute;
+  inset: auto auto 4px 50%;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  backdrop-filter: blur(10px);
+}
+
+.unlock-progress {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+  border-radius: 10px;
+  color: var(--color-muted);
+  background: rgba(15, 23, 42, 0.44);
+  border: 1px solid rgba(168, 85, 247, 0.24);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.unlock-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.unlock-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #a855f7, #f59e0b);
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.5);
+}
+
+.stage-preview-locked .pet-avatar {
+  opacity: 0.58;
+}
+
+.stage-preview-locked .stage-label::after {
+  content: ' 🔒';
+}
+
+.pet-card button:disabled {
+  color: rgba(248, 250, 252, 0.72);
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(168, 85, 247, 0.28);
+}
