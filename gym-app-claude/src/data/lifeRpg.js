@@ -6,7 +6,7 @@ export const companions = [
     name: 'Ember',
     species: 'Dragon',
     archetype: 'Strength companion',
-    trait: 'Gets bigger, armored, and absolutely jacked from workouts.',
+    trait: 'Gets bigger, armored, and visibly stronger from workouts.',
     mood: 'Fierce',
     palette: ['#ff7a45', '#ffd166', '#7b2d26', '#fef3c7'],
     stages: ['Hatchling', 'Drake', 'Armored Wyvern', 'Buff Ancient Dragon'],
@@ -171,6 +171,33 @@ export const goalCategories = [
   { id: 'life', name: 'Life', color: '#facc15' },
 ]
 
+export const goalSizes = [
+  {
+    id: 'small',
+    name: 'Small',
+    label: 'Small win',
+    range: '25-75 pts',
+    points: 50,
+    description: 'Quick task, under an hour, low friction.',
+  },
+  {
+    id: 'medium',
+    name: 'Medium',
+    label: 'Medium mission',
+    range: '100-250 pts',
+    points: 150,
+    description: 'Takes effort, planning, or a few sessions.',
+  },
+  {
+    id: 'big',
+    name: 'Big',
+    label: 'Big achievement',
+    range: '300-750 pts',
+    points: 500,
+    description: 'Major milestone, multi-day grind, or real-life unlock.',
+  },
+]
+
 export const skillTrees = [
   {
     id: 'gym',
@@ -234,6 +261,12 @@ export const achievementRules = [
     test: (profile) => profile.lifeGoals.some((goal) => goal.completed),
   },
   {
+    id: 'big-win',
+    title: 'Big Win',
+    detail: 'Complete a big achievement goal',
+    test: (profile) => profile.lifeGoals.some((goal) => goal.completed && goal.size === 'big'),
+  },
+  {
     id: 'custom-grind',
     title: 'Custom Grind',
     detail: 'Save a custom workout',
@@ -270,6 +303,8 @@ export const defaultProfile = {
       id: 'seed-goal-1',
       title: 'Hit three workouts this week',
       category: 'gym',
+      size: 'medium',
+      points: 150,
       completed: false,
       createdAt: 'Seed',
     },
@@ -277,6 +312,8 @@ export const defaultProfile = {
       id: 'seed-goal-2',
       title: 'Prep tomorrow before bed',
       category: 'life',
+      size: 'small',
+      points: 50,
       completed: false,
       createdAt: 'Seed',
     },
@@ -295,7 +332,11 @@ export function clampMeter(value) {
 }
 
 export function clampPercent(value) {
-  return Math.max(24, Math.min(76, Math.round(value)))
+  return Math.max(8, Math.min(92, Math.round(value)))
+}
+
+export function getGoalSize(sizeId) {
+  return goalSizes.find((size) => size.id === sizeId) ?? goalSizes[0]
 }
 
 export function getStageIndex(points) {
@@ -341,7 +382,14 @@ export function mergeProfile(savedProfile) {
       ? savedProfile.customWorkouts
       : defaultProfile.customWorkouts,
     lifeGoals: Array.isArray(savedProfile?.lifeGoals)
-      ? savedProfile.lifeGoals
+      ? savedProfile.lifeGoals.map((goal) => {
+          const size = getGoalSize(goal.size)
+          return {
+            ...goal,
+            size: goal.size ?? size.id,
+            points: Number.isFinite(goal.points) ? goal.points : size.points,
+          }
+        })
       : defaultProfile.lifeGoals,
     petMotionMode: savedProfile?.petMotionMode ?? defaultProfile.petMotionMode,
     petPosition: {
