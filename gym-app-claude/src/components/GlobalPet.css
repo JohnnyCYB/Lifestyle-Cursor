@@ -1,0 +1,245 @@
+.global-pet {
+  position: fixed;
+  z-index: 60;
+  width: var(--pet-size);
+  height: calc(var(--pet-size) * 0.84);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: drop-shadow(0 30px 30px rgba(0, 0, 0, 0.46));
+}
+
+.global-pet .real-dragon {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  transform-origin: center bottom;
+  animation: pet-breathe 2.4s ease-in-out infinite;
+}
+
+.global-pet.facing-left .real-dragon {
+  transform: scaleX(-1);
+}
+
+.global-pet-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: 88%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #f8fafc;
+  background: rgba(11, 13, 18, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.38);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  opacity: 0.9;
+}
+
+.global-pet-ground {
+  position: absolute;
+  left: 50%;
+  bottom: -3%;
+  width: 68%;
+  height: 14%;
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.42), transparent 70%);
+  transform: translateX(-50%);
+}
+
+.dragon-aura {
+  fill: rgba(255, 122, 69, 0.11);
+  stroke: rgba(250, 204, 21, 0.14);
+  stroke-width: 2;
+}
+
+.dragon-body,
+.head,
+.neck,
+.snout,
+.limb,
+.muscle,
+.forearm,
+.dragon-tail {
+  fill: url(#dragonBody);
+  stroke: rgba(80, 10, 18, 0.76);
+  stroke-width: 4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.dragon-belly {
+  fill: url(#dragonBelly);
+  stroke: rgba(116, 63, 12, 0.42);
+  stroke-width: 3;
+}
+
+.belly-lines,
+.brow,
+.teeth,
+.claws,
+.pet-ring,
+.wing.bone {
+  fill: none;
+  stroke: rgba(255, 239, 196, 0.86);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wing.membrane {
+  fill: rgba(185, 38, 40, 0.54);
+  stroke: rgba(255, 218, 119, 0.62);
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.horn,
+.spike {
+  fill: url(#dragonHorn);
+  stroke: rgba(114, 67, 22, 0.56);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.eye {
+  fill: #fef08a;
+  stroke: #111827;
+  stroke-width: 3;
+}
+
+.eye.glowing {
+  fill: #fff7ad;
+  filter: drop-shadow(0 0 10px #fde047) drop-shadow(0 0 18px #fb923c);
+}
+
+.jaw {
+  fill: rgba(91, 12, 22, 0.78);
+  stroke: rgba(80, 10, 18, 0.64);
+  stroke-width: 3;
+}
+
+.armor path:first-child,
+.armor-plate {
+  fill: rgba(33, 39, 54, 0.84);
+  stroke: rgba(148, 163, 184, 0.84);
+  stroke-width: 3;
+}
+
+.armor path:not(:first-child) {
+  fill: none;
+  stroke: rgba(250, 204, 21, 0.65);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.final-flame path:first-child {
+  fill: #f97316;
+}
+
+.final-flame path:last-child {
+  fill: #fef08a;
+}
+
+.reaction-power .real-dragon,
+.reaction-celebrate .real-dragon {
+  animation: pet-power 0.58s ease-in-out infinite alternate;
+}
+
+.reaction-happy .real-dragon,
+.reaction-curious .real-dragon {
+  animation: pet-bounce 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes pet-breathe {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -5px; }
+}
+
+@keyframes pet-bounce {
+  0% { translate: 0 0; }
+  100% { translate: 0 -11px; }
+}
+
+@keyframes pet-power {
+  0% { translate: 0 0; filter: saturate(1); }
+  100% { translate: 0 -8px; filter: saturate(1.35) brightness(1.1); }
+}
+
+.goal-size-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.goal-size-card {
+  display: grid;
+  gap: 5px;
+  min-height: 118px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.goal-size-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.goal-size-card:has(input:checked) {
+  color: var(--color-heading);
+  border-color: rgba(250, 204, 21, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(250, 204, 21, 0.35), 0 18px 50px rgba(250, 204, 21, 0.08);
+}
+
+.goal-size-card strong {
+  color: var(--color-heading);
+}
+
+.goal-size-card span {
+  color: var(--color-green);
+  font-weight: 900;
+}
+
+.goal-size-card small {
+  color: var(--color-muted);
+  line-height: 1.25;
+}
+
+.goal-reward {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: #101210;
+  background: var(--color-gold);
+  font-weight: 900;
+}
+
+@media (max-width: 760px) {
+  .global-pet {
+    width: calc(var(--pet-size) * 0.78);
+  }
+
+  .global-pet-bubble {
+    display: none;
+  }
+
+  .goal-size-grid {
+    grid-template-columns: 1fr;
+  }
+}
