@@ -1,11 +1,11 @@
 .global-pet {
   position: fixed;
-  z-index: 42;
-  width: min(var(--pet-size), 154px);
-  height: calc(min(var(--pet-size), 154px) * 0.88);
+  z-index: 60;
+  width: var(--pet-size);
+  height: calc(var(--pet-size) * 0.88);
   transform: translate(-50%, -50%);
   pointer-events: none;
-  filter: drop-shadow(0 22px 24px rgba(0, 0, 0, 0.48));
+  filter: drop-shadow(0 28px 32px rgba(0, 0, 0, 0.5));
 }
 
 .global-pet-sprite {
@@ -36,11 +36,11 @@
 }
 
 .global-pet-stage-3 {
-  filter: drop-shadow(0 26px 30px rgba(0, 0, 0, 0.54)) drop-shadow(0 0 24px rgba(250, 204, 21, 0.14));
+  filter: drop-shadow(0 36px 42px rgba(0, 0, 0, 0.58)) drop-shadow(0 0 32px rgba(250, 204, 21, 0.16));
 }
 
 .global-pet-stage-3 .global-pet-sprite {
-  transform: scale(1.035);
+  transform: scale(1.12);
 }
 
 .global-pet-ground {
@@ -76,7 +76,6 @@
 .emote-silly .emote-zoom.delay-1 { top: 48%; animation-delay: 0.1s; opacity: 0.7; }
 .emote-silly .emote-zoom.delay-2 { top: 56%; animation-delay: 0.2s; opacity: 0.45; }
 
-/* Fantasy-realism monster rendering */
 .monster-svg { overflow: visible; }
 .monster-svg .body-base,
 .monster-svg .head .body-base,
@@ -120,7 +119,6 @@
 .emote-power .emote-impact::after { content: ''; position: absolute; inset: 0; transform: rotate(48deg); background: inherit; }
 .emote-victory .emote-gold-ring { position: absolute; left: 50%; top: 44%; width: 95%; height: 70%; border: 3px solid rgba(250, 204, 21, 0.75); border-radius: 50%; transform: translate(-50%, -50%); animation: gold-ring 0.55s ease-in-out infinite alternate; box-shadow: 0 0 28px rgba(250, 204, 21, 0.45); }
 
-/* Pet-specific idle motion */
 .global-pet-dragon.pet-idle .global-pet-sprite { animation: dragon-idle 2.5s ease-in-out infinite; }
 .global-pet-monkey.pet-idle .global-pet-sprite { animation: monkey-idle 1.8s ease-in-out infinite; }
 .global-pet-wolf.pet-idle .global-pet-sprite { animation: wolf-idle 0.9s ease-in-out infinite; }
@@ -191,6 +189,6 @@
 .goal-reward { display: inline-flex; align-items: center; width: fit-content; min-height: 24px; padding: 0 8px; border-radius: 999px; color: #101210; background: var(--color-gold); font-weight: 900; }
 
 @media (max-width: 760px) {
-  .global-pet { width: calc(min(var(--pet-size), 154px) * 0.82); }
+  .global-pet { width: calc(var(--pet-size) * 0.82); }
   .goal-size-grid { grid-template-columns: 1fr; }
 }
