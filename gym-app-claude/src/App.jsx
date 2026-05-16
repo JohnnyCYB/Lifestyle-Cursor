@@ -161,7 +161,7 @@ function App() {
   }
 
   function movePetTo(position) {
-    if (!petCanMove) return
+    if (!petCanMove || activeView === 'pets') return
     setProfile((current) => ({
       ...current,
       petPosition: { x: clampPercent(position.x), y: clampPercent(position.y) },
@@ -268,7 +268,7 @@ function App() {
 
   return (
     <div className={['app-shell', profile.settings.animations ? 'motion-ok' : 'motion-off', profile.settings.focusMode ? 'focus-mode' : ''].filter(Boolean).join(' ')}>
-      <GlobalPet companion={companion} stageIndex={stageIndex} position={profile.petPosition} motionMode={profile.petMotionMode} petCanMove={petCanMove} reaction={petReaction} onMovePet={movePetTo} />
+      <GlobalPet companion={companion} stageIndex={stageIndex} position={profile.petPosition} motionMode={profile.petMotionMode} petCanMove={petCanMove && activeView !== 'pets'} reaction={petReaction} onMovePet={movePetTo} />
       <aside className="app-rail" aria-label="Primary navigation">
         <button className="brand-lockup" type="button" onClick={() => setActiveView('dashboard')}>
           <span className="brand-mark"><PawPrint size={20} aria-hidden="true" /></span>
@@ -282,119 +282,74 @@ function App() {
         </nav>
       </aside>
       <main className="app-main">
-        <header className="topbar" data-no-pet-move="true">
-          <div><span className="eyebrow">Welcome back, {profile.userName}</span><h1>{activeTitle(activeView)}</h1></div>
-          <div className="topbar-actions">
-            <MetricPill icon={Flame} label={`${profile.streak} day streak`} />
-            <MetricPill icon={Sparkles} label={`${profile.points} pts`} />
-            <button className="icon-toggle" type="button" aria-pressed={profile.settings.animations} title="Toggle animations" onClick={() => toggleSetting('animations')}><Settings2 size={18} aria-hidden="true" /></button>
-          </div>
-        </header>
-        {renderActiveView(activeView, sharedProps)}
+        <Topbar {...sharedProps} />
+        {activeView === 'dashboard' && <DashboardView {...sharedProps} />}
+        {activeView === 'pets' && <PetsView {...sharedProps} />}
+        {activeView === 'care' && <CareView {...sharedProps} />}
+        {activeView === 'gym' && <GymView {...sharedProps} />}
+        {activeView === 'nutrition' && <NutritionView {...sharedProps} />}
+        {activeView === 'goals' && <GoalsView {...sharedProps} />}
+        {activeView === 'progress' && <ProgressView {...sharedProps} />}
       </main>
     </div>
   )
 }
 
-function DashboardView({ profile, companion, stageName, evolution, completedToday, unlockedAchievements, weeklyTotal, onActivity, onCompleteQuest, onTogglePetRoam, setActiveView }) {
-  return <div className="view-stack">
-    <section className="hero-panel hero-panel-global">
-      <div className="hero-copy">
-        <span className="status-chip">{companion.mood} bond</span>
-        <h2>{companion.name} · {stageName} {companion.species}</h2>
-        <p>{companion.trait}</p>
-        <ProgressBar value={evolution.progress} label={evolution.label} />
-        <div className="quick-grid" aria-label="Quick actions">{quickActions.map((action) => { const Icon = action.icon; return <button key={action.label} className="action-button" type="button" onClick={() => onActivity(action)}><Icon size={18} aria-hidden="true" /><span>{action.label}</span><strong>+{action.points}</strong></button> })}</div>
-      </div>
-      <section className="pet-command-panel" data-no-pet-move="true">
-        <span className="eyebrow">Screen pet active</span>
-        <h2>Tap empty space — {companion.name} follows you everywhere.</h2>
-        <p>Free roam wanders across every tab. Buttons, nav, and forms stay clickable — your pet never blocks the grind.</p>
-        <div className="playfield-actions static"><button className="secondary-button" type="button" onClick={() => setActiveView('pets')}><PawPrint size={18} />Change companion</button><button className="secondary-button" type="button" aria-pressed={profile.petMotionMode === 'follow-roam'} onClick={onTogglePetRoam}><Sparkles size={18} />{profile.petMotionMode === 'follow-roam' ? 'Free roam on' : 'Tap follow only'}</button></div>
-      </section>
-    </section>
-    <section className="dashboard-grid"><StatTile label="Weekly XP" value={weeklyTotal} icon={Activity} /><StatTile label="Bond" value={`${profile.care.bond}%`} icon={Heart} /><StatTile label="Unlocked" value={unlockedAchievements.length} icon={BadgeCheck} /></section>
-    <section className="content-grid"><QuestBoard completedToday={completedToday} onCompleteQuest={onCompleteQuest} /><WeeklyChart weeklyPoints={profile.weeklyPoints} /></section>
-  </div>
-}
-
-
-function CareView({ profile, companion, stageIndex, onActivity, onTogglePetRoam }) {
-  return <div className="care-layout"><section className="care-stage"><PetAvatar companion={companion} stageIndex={stageIndex} size="large" /><div><span className="status-chip">{companion.mood} mood</span><h2>Care room</h2><p>{companion.name} responds to meals, training, play, rest, and screen movement.</p><button className="secondary-button" type="button" onClick={onTogglePetRoam}><Sparkles size={18} />Toggle free roam</button></div></section><section className="care-meters"><Meter label="Satiety" value={profile.care.satiety} /><Meter label="Energy" value={profile.care.energy} /><Meter label="Bond" value={profile.care.bond} /><Meter label="Spark" value={profile.care.spark} /></section><section className="care-actions">{careActions.map((action) => { const Icon = action.icon; return <button className="care-button" key={action.label} type="button" onClick={() => onActivity(action)}><Icon size={20} /><span>{action.label}</span><strong>+{action.points}</strong></button> })}</section></div>
-}
-
-function GymView({ profile, workoutForm, setWorkoutForm, onRecommendedWorkout, onSaveCustomWorkout, onLogCustomWorkout, onActivity }) {
-  return <div className="view-stack"><section className="section-heading"><span className="eyebrow">Recommended workouts</span><h2>Pick a workout and power up your pet</h2></section><section className="recommendation-grid">{recommendedWorkouts.map((workout) => <article className="recommendation-card" key={workout.id}><div className="movement-icon"><Dumbbell size={22} /></div><div><h3>{workout.name}</h3><p>{workout.details}</p><span>{workout.focus}</span></div><button className="primary-button" type="button" onClick={() => onRecommendedWorkout(workout)}><Plus size={17} />+{workout.points}</button></article>)}</section><section className="gym-tools-grid"><form className="custom-card" onSubmit={onSaveCustomWorkout}><div className="section-heading"><span className="eyebrow">Your own workout</span><h2>Add a custom one</h2></div><label htmlFor="custom-workout-name">Workout name</label><input id="custom-workout-name" value={workoutForm.name} onChange={(event) => setWorkoutForm((current) => ({ ...current, name: event.target.value }))} placeholder="Example: Push day" /><label htmlFor="custom-workout-detail">Sets, reps, or note</label><input id="custom-workout-detail" value={workoutForm.detail} onChange={(event) => setWorkoutForm((current) => ({ ...current, detail: event.target.value }))} placeholder="Bench 4x6, row 4x10" /><button className="primary-button full-width" type="submit"><Save size={18} />Save workout</button></form><section className="custom-card"><div className="section-heading"><span className="eyebrow">Saved customs</span><h2>Replay list</h2></div><div className="mini-list">{profile.customWorkouts.length ? profile.customWorkouts.map((workout) => <article className="mini-row" key={workout.id}><div><h3>{workout.name}</h3><p>{workout.detail}</p></div><button className="secondary-button" type="button" onClick={() => onLogCustomWorkout(workout)}><Plus size={17} />+{workout.points}</button></article>) : <div className="empty-state small"><Wand2 size={28} /><h2>No custom workouts yet</h2><p>Add one and it will stay here.</p></div>}</div></section></section><section className="movement-grid">{gymMovements.map((movement) => <article className="movement-card" key={movement.id}><div className="movement-icon"><Dumbbell size={22} /></div><div><h3>{movement.name}</h3><p>{movement.target}</p><span>{movement.pattern} - {movement.prescription}</span></div><button className="secondary-button" type="button" onClick={() => onActivity({ label: movement.name, points: movement.points, area: 'gym', reaction: 'power', care: { energy: -4, satiety: -2, bond: 3, spark: 2 } })}><Plus size={17} />Log set</button></article>)}</section></div>
-}
-
-function NutritionView({ foodInput, setFoodInput, foodResult, scanState, onFoodScan, onLogFood }) {
-  return <div className="nutrition-layout"><section className="scanner-panel"><div className="section-heading"><span className="eyebrow">Nutrition scanner</span><h2>Convert meals into XP</h2></div><form className="scanner-form" onSubmit={onFoodScan}><label htmlFor="food-input">Meal, barcode, or provider result</label><div className="input-row"><input id="food-input" value={foodInput} onChange={(event) => setFoodInput(event.target.value)} placeholder="chicken bowl" /><button className="primary-button" type="submit"><ScanLine size={18} />{scanState === 'scanning' ? 'Scanning' : 'Scan'}</button></div></form><div className="shortcut-row">{foodShortcuts.map((food) => <button className="shortcut-chip" key={food} type="button" onClick={() => setFoodInput(food)}>{food}</button>)}</div></section><section className="scan-result">{foodResult ? <><div><span className="status-chip">{Math.round(foodResult.confidence * 100)}% match</span><h2>{foodResult.name}</h2></div><div className="macro-grid"><StatTile label="Calories" value={foodResult.calories} icon={Flame} /><StatTile label="Protein" value={`${foodResult.protein}g`} icon={Dumbbell} /><StatTile label="Carbs" value={`${foodResult.carbs}g`} icon={Zap} /><StatTile label="Fat" value={`${foodResult.fat}g`} icon={Leaf} /></div><button className="primary-button full-width" type="button" onClick={onLogFood}><Plus size={18} />{scanState === 'logged' ? 'Logged' : 'Log meal'}</button></> : <div className="empty-state"><ScanLine size={36} /><h2>Ready to scan</h2><p>Meal estimates appear here with macros and companion XP.</p></div>}</section></div>
-}
-
-function GoalsView({ profile, goalForm, setGoalForm, onAddLifeGoal, onCompleteGoal, onDeleteGoal }) {
-  const openGoals = profile.lifeGoals.filter((goal) => !goal.completed)
-  const completedGoals = profile.lifeGoals.filter((goal) => goal.completed)
-  return <div className="goals-layout"><form className="goal-form" onSubmit={onAddLifeGoal}><div className="section-heading"><span className="eyebrow">Life goals</span><h2>Add a goal worth XP</h2></div><label htmlFor="goal-title">Goal title</label><input id="goal-title" value={goalForm.title} onChange={(event) => setGoalForm((current) => ({ ...current, title: event.target.value }))} placeholder="Example: Apply to two internships" /><label htmlFor="goal-category">Category</label><select id="goal-category" value={goalForm.category} onChange={(event) => setGoalForm((current) => ({ ...current, category: event.target.value }))}>{goalCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select><label>Reward size</label><div className="goal-size-grid">{goalSizes.map((size) => <label className="goal-size-card" key={size.id}><input type="radio" name="goal-size" value={size.id} checked={goalForm.size === size.id} onChange={(event) => setGoalForm((current) => ({ ...current, size: event.target.value }))} /><strong>{size.label}</strong><span>{size.range}</span><small>{size.description}</small></label>)}</div><button className="primary-button full-width" type="submit"><Plus size={18} />Add goal</button></form><section className="goals-panel"><div className="section-heading"><span className="eyebrow">Active goals</span><h2>Finish for variable XP</h2></div><GoalList goals={openGoals} emptyTitle="No active goals" emptyText="Add something you actually want to win this week." onCompleteGoal={onCompleteGoal} onDeleteGoal={onDeleteGoal} /></section><section className="goals-panel completed-goals"><div className="section-heading"><span className="eyebrow">Completed</span><h2>Wins</h2></div><GoalList goals={completedGoals} emptyTitle="No wins logged yet" emptyText="Complete one goal and your pet celebrates." onCompleteGoal={onCompleteGoal} onDeleteGoal={onDeleteGoal} /></section></div>
-}
-
-function GoalList({ goals, emptyTitle, emptyText, onCompleteGoal, onDeleteGoal }) {
-  if (!goals.length) return <div className="empty-state small"><Flag size={28} /><h2>{emptyTitle}</h2><p>{emptyText}</p></div>
-  return <div className="goal-list">{goals.map((goal) => { const category = goalCategories.find((item) => item.id === goal.category); const size = getGoalSize(goal.size); const points = goal.points ?? size.points; return <article className={goal.completed ? 'goal-row done' : 'goal-row'} key={goal.id}><div><span className="goal-chip" style={{ '--goal-color': category?.color ?? '#34d399' }}>{category?.name ?? 'Life'}</span><span className="goal-reward">{size.name} +{points} XP</span><h3>{goal.title}</h3></div><div className="row-actions">{!goal.completed && <button className="primary-button" type="button" onClick={() => onCompleteGoal(goal.id)}><CheckCircle2 size={17} />+{points}</button>}<button className="icon-toggle danger" type="button" title="Delete goal" onClick={() => onDeleteGoal(goal.id)}><Trash2 size={17} /></button></div></article> })}</div>
-}
-
-function ProgressView({ profile, unlockedAchievements, onToggleSetting, onTogglePetRoam, onResetProfile }) {
-  return <div className="progress-layout"><section className="skill-panel"><div className="section-heading"><span className="eyebrow">Skill trees</span><h2>Paths</h2></div>{skillTrees.map((tree) => { const xp = profile.skillXp[tree.id] ?? 0; const nextMilestone = tree.milestones.find((milestone) => xp < milestone) ?? tree.milestones.at(-1); const value = Math.min(100, Math.round((xp / nextMilestone) * 100)); return <div className="skill-row" key={tree.id}><div><h3>{tree.name}</h3><p>{tree.perk}</p></div><ProgressBar value={value} label={`${xp} XP`} color={tree.color} /></div> })}</section><section className="achievement-panel"><div className="section-heading"><span className="eyebrow">Badges</span><h2>Achievements</h2></div><div className="badge-grid">{achievementRules.map((achievement) => { const unlocked = unlockedAchievements.some((item) => item.id === achievement.id); return <article className={unlocked ? 'badge-card unlocked' : 'badge-card'} key={achievement.id}>{unlocked ? <BadgeCheck size={22} /> : <Circle size={22} />}<h3>{achievement.title}</h3><p>{achievement.detail}</p></article> })}</div></section><section className="settings-panel"><div className="section-heading"><span className="eyebrow">Settings</span><h2>Comfort</h2></div><ToggleRow label="Pet animations" checked={profile.settings.animations} onClick={() => onToggleSetting('animations')} /><ToggleRow label="Free roam" checked={profile.petMotionMode === 'follow-roam'} onClick={onTogglePetRoam} /><ToggleRow label="Focus mode" checked={profile.settings.focusMode} onClick={() => onToggleSetting('focusMode')} /><button className="secondary-button" type="button" onClick={onResetProfile}><RefreshCcw size={17} />Reset demo</button></section><section className="ledger-panel"><div className="section-heading"><span className="eyebrow">Ledger</span><h2>Recent XP</h2></div><div className="ledger-list">{profile.ledger.map((entry) => <div className="ledger-row" key={entry.id}><span>{entry.label}</span><strong>{entry.points > 0 ? '+' : ''}{entry.points}</strong></div>)}</div></section></div>
-}
-
-function QuestBoard({ completedToday, onCompleteQuest }) { return <section className="quest-board"><div className="section-heading"><span className="eyebrow">Daily quests</span><h2>Today</h2></div><div className="quest-list">{dailyQuests.map((quest) => { const completed = completedToday.includes(quest.id); return <article className="quest-row" key={quest.id}><div><h3>{quest.title}</h3><p>{quest.label}</p></div><button className={completed ? 'complete-button done' : 'complete-button'} type="button" disabled={completed} onClick={() => onCompleteQuest(quest)}>{completed ? <CheckCircle2 size={18} /> : <Plus size={18} />}{completed ? 'Done' : `+${quest.points}`}</button></article> })}</div></section> }
-function WeeklyChart({ weeklyPoints }) { const maxValue = Math.max(...weeklyPoints, 1); return <section className="weekly-panel"><div className="section-heading"><span className="eyebrow">Weekly summary</span><h2>XP rhythm</h2></div><div className="bar-chart" aria-label="Weekly point chart">{weeklyPoints.map((value, index) => <div className="bar-column" key={`${value}-${index}`}><span style={{ height: `${Math.max(12, (value / maxValue) * 100)}%` }} /><small>{['M', 'T', 'W', 'T', 'F', 'S', 'S'][index]}</small></div>)}</div></section> }
-function PetAvatar({ companion, stageIndex, size, mood = 'idle' }) {
-  return (
-    <div
-      className={`pet-avatar pet-${companion.id} pet-stage-${stageIndex} pet-${size}`}
-      style={{
-        '--pet-a': companion.palette[0],
-        '--pet-b': companion.palette[1],
-        '--pet-c': companion.palette[2],
-        '--pet-d': companion.palette[3],
-      }}
-    >
-      <span className="pet-shadow" aria-hidden="true" />
-      <PetArt id={companion.id} stageIndex={stageIndex} mood={mood} />
-    </div>
-  )
-}
-function StatTile({ label, value, icon: Icon }) { return <article className="stat-tile"><Icon size={19} /><span>{label}</span><strong>{value}</strong></article> }
-function MetricPill({ icon: Icon, label }) { return <span className="metric-pill"><Icon size={16} />{label}</span> }
-function Meter({ label, value }) { return <div className="meter"><div><span>{label}</span><strong>{value}%</strong></div><span className="meter-track"><span style={{ width: `${value}%` }} /></span></div> }
-function ProgressBar({ value, label, color }) { return <div className="progress-block" style={{ '--progress-color': color }}><div><span>{label}</span><strong>{value}%</strong></div><span className="progress-track"><span style={{ width: `${value}%` }} /></span></div> }
-function ToggleRow({ label, checked, onClick }) { return <button className="toggle-row" type="button" aria-pressed={checked} onClick={onClick}><span>{label}</span><span className="switch"><span /></span></button> }
-
 function usePersistentProfile() {
   const [profile, setProfileState] = useState(() => {
-    try { const saved = window.localStorage.getItem(storageKey); return saved ? mergeProfile(JSON.parse(saved)) : defaultProfile } catch { return defaultProfile }
+    try {
+      const saved = window.localStorage.getItem(storageKey)
+      return saved ? mergeProfile(JSON.parse(saved)) : defaultProfile
+    } catch {
+      return defaultProfile
+    }
   })
+
   const setProfile = useCallback((updater) => {
-    setProfileState((current) => { const next = mergeProfile(typeof updater === 'function' ? updater(current) : updater); window.localStorage.setItem(storageKey, JSON.stringify(next)); return next })
+    setProfileState((current) => {
+      const next = typeof updater === 'function' ? updater(current) : updater
+      const merged = mergeProfile(next)
+      window.localStorage.setItem(storageKey, JSON.stringify(merged))
+      return merged
+    })
   }, [])
+
   return [profile, setProfile]
 }
-function applyActivity(profile, activity) { const points = activity.points ?? 0; const area = normalizeArea(activity.area); const weeklyPoints = [...profile.weeklyPoints]; weeklyPoints[weeklyPoints.length - 1] += points; return { ...profile, points: profile.points + points, care: applyCare(profile.care, activity.care), skillXp: { ...profile.skillXp, [area]: (profile.skillXp[area] ?? 0) + points }, weeklyPoints, ledger: [makeLedgerEntry(activity.label, points, area), ...profile.ledger].slice(0, 10) } }
-function applyCare(care, delta = {}) { return { satiety: clampMeter(care.satiety + (delta.satiety ?? 0)), energy: clampMeter(care.energy + (delta.energy ?? 0)), bond: clampMeter(care.bond + (delta.bond ?? 0)), spark: clampMeter(care.spark + (delta.spark ?? 0)) } }
-function makeLedgerEntry(label, points, area) { return { id: makeId('ledger'), label, points, area, time: 'Now' } }
-function makeId(prefix) { return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}` }
-function normalizeArea(area) { return ['gym', 'nutrition', 'focus', 'life'].includes(area) ? area : 'life' }
-function reactionForArea(area) { if (area === 'gym') return 'power'; if (area === 'nutrition') return 'happy'; return 'celebrate' }
-function activeTitle(activeView) { return { pets: 'Companions', care: 'Pet Care', gym: 'Gym', nutrition: 'Nutrition', goals: 'Goals', progress: 'Progress' }[activeView] ?? 'Dashboard' }
-function renderActiveView(activeView, sharedProps) {
+
+function applyActivity(profile, activity) {
+  const points = activity.points ?? 0
+  const area = activity.area ?? 'life'
+  const care = activity.care ?? {}
+  const weeklyPoints = [...profile.weeklyPoints]
+  weeklyPoints[weeklyPoints.length - 1] = (weeklyPoints.at(-1) ?? 0) + points
+
   return {
-    pets: <PetsView profile={sharedProps.profile} companion={sharedProps.companion} stageIndex={sharedProps.stageIndex} stageName={sharedProps.stageName} onSelectPet={sharedProps.onSelectPet} />,
-    care: <CareView {...sharedProps} />,
-    gym: <GymView {...sharedProps} />,
-    nutrition: <NutritionView {...sharedProps} />,
-    goals: <GoalsView {...sharedProps} />,
-    progress: <ProgressView {...sharedProps} />,
-  }[activeView] ?? <DashboardView {...sharedProps} />
+    ...profile,
+    points: profile.points + points,
+    care: {
+      satiety: clampMeter(profile.care.satiety + (care.satiety ?? -1)),
+      energy: clampMeter(profile.care.energy + (care.energy ?? -1)),
+      bond: clampMeter(profile.care.bond + (care.bond ?? 1)),
+      spark: clampMeter(profile.care.spark + (care.spark ?? 1)),
+    },
+    skillXp: { ...profile.skillXp, [area]: (profile.skillXp[area] ?? 0) + points },
+    ledger: [makeLedgerEntry(activity.label, points, area), ...profile.ledger].slice(0, 10),
+    weeklyPoints,
+  }
 }
 
-export default App
+function reactionForArea(area) {
+  if (area === 'gym') return 'power'
+  if (area === 'nutrition') return 'happy'
+  if (area === 'focus') return 'celebrate'
+  return 'happy'
+}
+
+function makeLedgerEntry(label, points, area) {
+  return { id: makeId('log'), label, points, area, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+}
+
+function makeId(prefix) {
+  return `${prefix}-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`
+}
