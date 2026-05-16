@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+﻿import { useCallback, useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import {
   Activity,
@@ -44,6 +44,8 @@ import {
   skillTrees,
 } from './data/lifeRpg'
 import GlobalPet from './components/GlobalPet'
+import PetArt from './components/PetArt'
+import PetsView from './components/PetsView'
 import { scanFood } from './services/foodScanner'
 import './App.css'
 
@@ -84,6 +86,7 @@ function App() {
   const [workoutForm, setWorkoutForm] = useState({ name: '', detail: '' })
   const [goalForm, setGoalForm] = useState({ title: '', category: 'gym', size: 'small' })
   const prefersReducedMotion = useReducedMotion()
+  const lastStageRef = useRef(getStageIndex(profile.points))
 
   const companion = companions.find((candidate) => candidate.id === profile.petType) ?? companions[0]
   const stageIndex = getStageIndex(profile.points)
@@ -96,9 +99,21 @@ function App() {
 
   useEffect(() => {
     if (petReaction === 'idle') return undefined
-    const reactionTimer = window.setTimeout(() => setPetReaction('idle'), 1300)
+    const duration = { victory: 2600, celebrate: 1800, power: 1500, happy: 1400, silly: 1600, curious: 1100 }[petReaction] ?? 1300
+    const reactionTimer = window.setTimeout(() => setPetReaction('idle'), duration)
     return () => window.clearTimeout(reactionTimer)
   }, [petReaction])
+
+  useEffect(() => {
+    if (!profile.settings.animations) {
+      lastStageRef.current = stageIndex
+      return
+    }
+    if (stageIndex > lastStageRef.current) {
+      setPetReaction(stageIndex === 3 ? 'victory' : 'celebrate')
+    }
+    lastStageRef.current = stageIndex
+  }, [profile.settings.animations, stageIndex])
 
   function triggerPetReaction(reaction) {
     if (!profile.settings.animations) return
@@ -192,22 +207,24 @@ function App() {
   }
 
   function completeGoal(goalId) {
+    const goalToComplete = profile.lifeGoals.find((goal) => goal.id === goalId)
+    const isBig = goalToComplete?.size === 'big'
     setProfile((current) => {
-      const goalToComplete = current.lifeGoals.find((goal) => goal.id === goalId)
-      if (!goalToComplete || goalToComplete.completed) return current
-      const points = goalToComplete.points ?? getGoalSize(goalToComplete.size).points
+      const goal = current.lifeGoals.find((item) => item.id === goalId)
+      if (!goal || goal.completed) return current
+      const points = goal.points ?? getGoalSize(goal.size).points
       const updated = applyActivity(current, {
-        label: `Completed goal: ${goalToComplete.title}`,
+        label: `Completed goal: ${goal.title}`,
         points,
-        area: goalToComplete.category,
-        care: { bond: 10, spark: goalToComplete.size === 'big' ? 24 : 12, energy: 4 },
+        area: goal.category,
+        care: { bond: 10, spark: goal.size === 'big' ? 24 : 12, energy: 4 },
       })
       return {
         ...updated,
-        lifeGoals: updated.lifeGoals.map((goal) => (goal.id === goalId ? { ...goal, points, completed: true } : goal)),
+        lifeGoals: updated.lifeGoals.map((item) => (item.id === goalId ? { ...item, points, completed: true } : item)),
       }
     })
-    triggerPetReaction('celebrate')
+    triggerPetReaction(isBig ? 'victory' : 'celebrate')
   }
 
   function deleteGoal(goalId) {
@@ -279,20 +296,20 @@ function App() {
   )
 }
 
-function DashboardView({ profile, companion, stageIndex, stageName, evolution, completedToday, unlockedAchievements, weeklyTotal, onActivity, onCompleteQuest, onTogglePetRoam, setActiveView }) {
+function DashboardView({ profile, companion, stageName, evolution, completedToday, unlockedAchievements, weeklyTotal, onActivity, onCompleteQuest, onTogglePetRoam, setActiveView }) {
   return <div className="view-stack">
     <section className="hero-panel hero-panel-global">
       <div className="hero-copy">
         <span className="status-chip">{companion.mood} bond</span>
-        <h2>{companion.name} is a {stageName} {companion.species}</h2>
+        <h2>{companion.name} · {stageName} {companion.species}</h2>
         <p>{companion.trait}</p>
         <ProgressBar value={evolution.progress} label={evolution.label} />
         <div className="quick-grid" aria-label="Quick actions">{quickActions.map((action) => { const Icon = action.icon; return <button key={action.label} className="action-button" type="button" onClick={() => onActivity(action)}><Icon size={18} aria-hidden="true" /><span>{action.label}</span><strong>+{action.points}</strong></button> })}</div>
       </div>
       <section className="pet-command-panel" data-no-pet-move="true">
         <span className="eyebrow">Screen pet active</span>
-        <h2>Tap anywhere empty and your dragon follows.</h2>
-        <p>Free roam lets it walk across tabs. Buttons and forms are protected so it will not steal your clicks.</p>
+        <h2>Tap empty space — {companion.name} follows you everywhere.</h2>
+        <p>Free roam wanders across every tab. Buttons, nav, and forms stay clickable — your pet never blocks the grind.</p>
         <div className="playfield-actions static"><button className="secondary-button" type="button" onClick={() => setActiveView('pets')}><PawPrint size={18} />Change companion</button><button className="secondary-button" type="button" aria-pressed={profile.petMotionMode === 'follow-roam'} onClick={onTogglePetRoam}><Sparkles size={18} />{profile.petMotionMode === 'follow-roam' ? 'Free roam on' : 'Tap follow only'}</button></div>
       </section>
     </section>
@@ -301,9 +318,6 @@ function DashboardView({ profile, companion, stageIndex, stageName, evolution, c
   </div>
 }
 
-function PetsView({ profile, companion, stageIndex, stageName, onSelectPet }) {
-  return <div className="view-stack"><section className="split-panel"><div><span className="eyebrow">Active companion</span><h2>{companion.name}, {stageName} {companion.species}</h2><p>{companion.trait}</p><div className="meter-list"><Meter label="Bond" value={profile.care.bond} /><Meter label="Spark" value={profile.care.spark} /></div></div><PetAvatar companion={companion} stageIndex={stageIndex} size="medium" /></section><section className="pet-grid" aria-label="Companion selection">{companions.map((pet) => <article className="pet-card" key={pet.id}><PetAvatar companion={pet} stageIndex={stageIndex} size="small" /><div><h3>{pet.name}</h3><p>{pet.species}</p><span>{pet.archetype}</span></div><div className="stage-preview" aria-label={`${pet.name} evolution preview`}>{pet.stages.map((stage, index) => <span key={stage} title={stage}><PetAvatar companion={pet} stageIndex={index} size="tiny" /><small>{index + 1}</small></span>)}</div><button className={pet.id === profile.petType ? 'primary-button' : 'secondary-button'} type="button" onClick={() => onSelectPet(pet.id)}>{pet.id === profile.petType ? <CheckCircle2 size={17} /> : <Plus size={17} />}{pet.id === profile.petType ? 'Bonded' : 'Select'}</button></article>)}</section></div>
-}
 
 function CareView({ profile, companion, stageIndex, onActivity, onTogglePetRoam }) {
   return <div className="care-layout"><section className="care-stage"><PetAvatar companion={companion} stageIndex={stageIndex} size="large" /><div><span className="status-chip">{companion.mood} mood</span><h2>Care room</h2><p>{companion.name} responds to meals, training, play, rest, and screen movement.</p><button className="secondary-button" type="button" onClick={onTogglePetRoam}><Sparkles size={18} />Toggle free roam</button></div></section><section className="care-meters"><Meter label="Satiety" value={profile.care.satiety} /><Meter label="Energy" value={profile.care.energy} /><Meter label="Bond" value={profile.care.bond} /><Meter label="Spark" value={profile.care.spark} /></section><section className="care-actions">{careActions.map((action) => { const Icon = action.icon; return <button className="care-button" key={action.label} type="button" onClick={() => onActivity(action)}><Icon size={20} /><span>{action.label}</span><strong>+{action.points}</strong></button> })}</section></div>
@@ -334,7 +348,22 @@ function ProgressView({ profile, unlockedAchievements, onToggleSetting, onToggle
 
 function QuestBoard({ completedToday, onCompleteQuest }) { return <section className="quest-board"><div className="section-heading"><span className="eyebrow">Daily quests</span><h2>Today</h2></div><div className="quest-list">{dailyQuests.map((quest) => { const completed = completedToday.includes(quest.id); return <article className="quest-row" key={quest.id}><div><h3>{quest.title}</h3><p>{quest.label}</p></div><button className={completed ? 'complete-button done' : 'complete-button'} type="button" disabled={completed} onClick={() => onCompleteQuest(quest)}>{completed ? <CheckCircle2 size={18} /> : <Plus size={18} />}{completed ? 'Done' : `+${quest.points}`}</button></article> })}</div></section> }
 function WeeklyChart({ weeklyPoints }) { const maxValue = Math.max(...weeklyPoints, 1); return <section className="weekly-panel"><div className="section-heading"><span className="eyebrow">Weekly summary</span><h2>XP rhythm</h2></div><div className="bar-chart" aria-label="Weekly point chart">{weeklyPoints.map((value, index) => <div className="bar-column" key={`${value}-${index}`}><span style={{ height: `${Math.max(12, (value / maxValue) * 100)}%` }} /><small>{['M', 'T', 'W', 'T', 'F', 'S', 'S'][index]}</small></div>)}</div></section> }
-function PetAvatar({ companion, stageIndex, size }) { return <div className={`pet-avatar pet-${companion.id} pet-stage-${stageIndex} pet-${size}`} style={{ '--pet-a': companion.palette[0], '--pet-b': companion.palette[1], '--pet-c': companion.palette[2], '--pet-d': companion.palette[3] }}><span className="pet-shadow" aria-hidden="true" /><span className="pet-mini-core"><PawPrint size={size === 'tiny' ? 18 : 34} /></span></div> }
+function PetAvatar({ companion, stageIndex, size, mood = 'idle' }) {
+  return (
+    <div
+      className={`pet-avatar pet-${companion.id} pet-stage-${stageIndex} pet-${size}`}
+      style={{
+        '--pet-a': companion.palette[0],
+        '--pet-b': companion.palette[1],
+        '--pet-c': companion.palette[2],
+        '--pet-d': companion.palette[3],
+      }}
+    >
+      <span className="pet-shadow" aria-hidden="true" />
+      <PetArt id={companion.id} stageIndex={stageIndex} mood={mood} />
+    </div>
+  )
+}
 function StatTile({ label, value, icon: Icon }) { return <article className="stat-tile"><Icon size={19} /><span>{label}</span><strong>{value}</strong></article> }
 function MetricPill({ icon: Icon, label }) { return <span className="metric-pill"><Icon size={16} />{label}</span> }
 function Meter({ label, value }) { return <div className="meter"><div><span>{label}</span><strong>{value}%</strong></div><span className="meter-track"><span style={{ width: `${value}%` }} /></span></div> }
@@ -357,6 +386,15 @@ function makeId(prefix) { return `${prefix}-${Date.now()}-${Math.random().toStri
 function normalizeArea(area) { return ['gym', 'nutrition', 'focus', 'life'].includes(area) ? area : 'life' }
 function reactionForArea(area) { if (area === 'gym') return 'power'; if (area === 'nutrition') return 'happy'; return 'celebrate' }
 function activeTitle(activeView) { return { pets: 'Companions', care: 'Pet Care', gym: 'Gym', nutrition: 'Nutrition', goals: 'Goals', progress: 'Progress' }[activeView] ?? 'Dashboard' }
-function renderActiveView(activeView, sharedProps) { return { pets: <PetsView {...sharedProps} />, care: <CareView {...sharedProps} />, gym: <GymView {...sharedProps} />, nutrition: <NutritionView {...sharedProps} />, goals: <GoalsView {...sharedProps} />, progress: <ProgressView {...sharedProps} /> }[activeView] ?? <DashboardView {...sharedProps} /> }
+function renderActiveView(activeView, sharedProps) {
+  return {
+    pets: <PetsView profile={sharedProps.profile} companion={sharedProps.companion} stageIndex={sharedProps.stageIndex} stageName={sharedProps.stageName} onSelectPet={sharedProps.onSelectPet} />,
+    care: <CareView {...sharedProps} />,
+    gym: <GymView {...sharedProps} />,
+    nutrition: <NutritionView {...sharedProps} />,
+    goals: <GoalsView {...sharedProps} />,
+    progress: <ProgressView {...sharedProps} />,
+  }[activeView] ?? <DashboardView {...sharedProps} />
+}
 
 export default App

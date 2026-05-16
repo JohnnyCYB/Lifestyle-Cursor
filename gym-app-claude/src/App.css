@@ -543,7 +543,7 @@
 }
 
 .pet-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 }
 
 .pet-card {
@@ -555,6 +555,116 @@
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-panel);
+}
+
+.pet-monster-card {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--card-accent, #facc15) 35%, var(--color-border));
+  background:
+    linear-gradient(165deg, color-mix(in srgb, var(--card-accent) 12%, var(--color-panel)), var(--color-panel)),
+    var(--color-panel);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
+.pet-monster-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--card-accent), var(--card-glow));
+}
+
+.pet-card-active {
+  border-color: rgba(250, 204, 21, 0.72);
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(250, 204, 21, 0.28),
+    0 0 40px color-mix(in srgb, var(--card-glow) 24%, transparent);
+}
+
+.pet-card-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.pet-card-rarity {
+  display: inline-flex;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: #101210;
+  background: var(--color-gold);
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.pet-card-personality,
+.pet-card-habit {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.pet-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+
+.pet-personality-chip,
+.pet-habit-chip {
+  display: inline-flex;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.pet-personality-chip {
+  color: var(--color-heading);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.pet-habit-chip {
+  color: #101210;
+  background: color-mix(in srgb, var(--color-green) 88%, #ffffff);
+}
+
+.pets-hero .pet-trait-line {
+  max-width: 52ch;
+}
+
+.stage-preview .stage-final {
+  outline: 1px solid rgba(250, 204, 21, 0.45);
+  border-radius: 6px;
+  background: rgba(250, 204, 21, 0.06);
+}
+
+.stage-preview small {
+  position: static;
+  display: block;
+  margin-top: 2px;
+  padding: 0 2px;
+  color: var(--color-muted);
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pet-tiny .monster-svg {
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.35));
 }
 
 .pet-card p,
