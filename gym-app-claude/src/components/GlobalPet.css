@@ -8,7 +8,7 @@
   filter: drop-shadow(0 30px 30px rgba(0, 0, 0, 0.46));
 }
 
-.global-pet .real-dragon {
+.global-pet .monster-svg {
   width: 100%;
   height: 100%;
   display: block;
@@ -17,7 +17,7 @@
   animation: pet-breathe 2.4s ease-in-out infinite;
 }
 
-.global-pet.facing-left .real-dragon {
+.global-pet.facing-left .monster-svg {
   transform: scaleX(-1);
 }
 
@@ -55,39 +55,58 @@
   transform: translateX(-50%);
 }
 
-.dragon-aura {
-  fill: rgba(255, 122, 69, 0.11);
-  stroke: rgba(250, 204, 21, 0.14);
+.aura {
+  fill: rgba(255, 255, 255, 0.08);
   stroke-width: 2;
 }
 
-.dragon-body,
+.aura.fire { fill: rgba(255, 122, 69, 0.12); stroke: rgba(250, 204, 21, 0.18); }
+.aura.jungle { fill: rgba(192, 132, 252, 0.13); stroke: rgba(250, 204, 21, 0.18); }
+.aura.cyber { fill: rgba(34, 211, 238, 0.12); stroke: rgba(96, 165, 250, 0.28); }
+.aura.stone { fill: rgba(163, 230, 53, 0.1); stroke: rgba(148, 163, 184, 0.28); }
+.aura.phoenix { fill: rgba(251, 113, 133, 0.13); stroke: rgba(253, 230, 138, 0.24); }
+
+.fire-fill,
 .head,
 .neck,
 .snout,
 .limb,
 .muscle,
 .forearm,
-.dragon-tail {
-  fill: url(#dragonBody);
-  stroke: rgba(80, 10, 18, 0.76);
+.tail {
+  fill: url(#fire);
+  stroke: rgba(80, 10, 18, 0.78);
   stroke-width: 4;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
 
-.dragon-belly {
-  fill: url(#dragonBelly);
+.monkey-fill { fill: url(#fur); stroke: rgba(40, 22, 10, 0.82); stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+.monkey-belly, .muzzle, .ear { fill: #f4b56d; stroke: rgba(58, 29, 10, 0.55); stroke-width: 3; }
+.wolf-fill { fill: url(#cyber); stroke: rgba(7, 18, 48, 0.88); stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+.wolf-secondary { fill: rgba(15, 23, 42, 0.96); stroke: rgba(34, 211, 238, 0.46); stroke-width: 3; stroke-linejoin: round; }
+.stone-fill { fill: url(#stone); stroke: rgba(15, 23, 42, 0.82); stroke-width: 4; stroke-linejoin: round; }
+.stone-secondary { fill: #64748b; stroke: rgba(15, 23, 42, 0.8); stroke-width: 4; }
+.phoenix-fill { fill: url(#phoenix); stroke: rgba(124, 45, 18, 0.76); stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+.phoenix-belly, .beak { fill: url(#belly); stroke: rgba(124, 45, 18, 0.52); stroke-width: 3; }
+
+.belly {
+  fill: url(#belly);
   stroke: rgba(116, 63, 12, 0.42);
   stroke-width: 3;
 }
 
-.belly-lines,
+.detail-line,
 .brow,
 .teeth,
 .claws,
-.pet-ring,
-.wing.bone {
+.wing-bone,
+.tail-ring,
+.legs-line,
+.circuit,
+.energy-ring,
+.stone-lines,
+.silly-mouth {
   fill: none;
   stroke: rgba(255, 239, 196, 0.86);
   stroke-width: 5;
@@ -95,7 +114,12 @@
   stroke-linejoin: round;
 }
 
-.wing.membrane {
+.circuit,
+.energy-ring { stroke: rgba(34, 211, 238, 0.92); }
+.stone-lines { stroke: rgba(226, 232, 240, 0.42); }
+.silly-mouth { stroke: rgba(255, 239, 196, 0.95); }
+
+.wing {
   fill: rgba(185, 38, 40, 0.54);
   stroke: rgba(255, 218, 119, 0.62);
   stroke-width: 4;
@@ -103,8 +127,10 @@
 }
 
 .horn,
-.spike {
-  fill: url(#dragonHorn);
+.tuft,
+.hair,
+.flame-crest {
+  fill: url(#hornTone);
   stroke: rgba(114, 67, 22, 0.56);
   stroke-width: 3;
   stroke-linejoin: round;
@@ -116,9 +142,11 @@
   stroke-width: 3;
 }
 
+.cyber-eye,
+.crystal-eye,
 .eye.glowing {
   fill: #fff7ad;
-  filter: drop-shadow(0 0 10px #fde047) drop-shadow(0 0 18px #fb923c);
+  filter: drop-shadow(0 0 10px #fde047) drop-shadow(0 0 18px #38bdf8);
 }
 
 .jaw {
@@ -127,8 +155,7 @@
   stroke-width: 3;
 }
 
-.armor path:first-child,
-.armor-plate {
+.armor path:first-child {
   fill: rgba(33, 39, 54, 0.84);
   stroke: rgba(148, 163, 184, 0.84);
   stroke-width: 3;
@@ -141,22 +168,30 @@
   stroke-linecap: round;
 }
 
-.final-flame path:first-child {
-  fill: #f97316;
-}
-
-.final-flame path:last-child {
+.crystals path,
+.burst path {
   fill: #fef08a;
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 2;
 }
 
-.reaction-power .real-dragon,
-.reaction-celebrate .real-dragon {
+.banana path { fill: #fde047; }
+.cyber-lines path { fill: #22d3ee; }
+.crystal path { fill: #bef264; }
+.phoenix-fire path { fill: #fb923c; }
+
+.reaction-power .monster-svg,
+.reaction-celebrate .monster-svg {
   animation: pet-power 0.58s ease-in-out infinite alternate;
 }
 
-.reaction-happy .real-dragon,
-.reaction-curious .real-dragon {
+.reaction-happy .monster-svg,
+.reaction-curious .monster-svg {
   animation: pet-bounce 0.9s ease-in-out infinite alternate;
+}
+
+.reaction-silly .monster-svg {
+  animation: pet-silly 0.7s ease-in-out infinite alternate;
 }
 
 @keyframes pet-breathe {
@@ -165,13 +200,18 @@
 }
 
 @keyframes pet-bounce {
-  0% { translate: 0 0; }
-  100% { translate: 0 -11px; }
+  0% { translate: 0 0; rotate: -1deg; }
+  100% { translate: 0 -11px; rotate: 1deg; }
 }
 
 @keyframes pet-power {
   0% { translate: 0 0; filter: saturate(1); }
   100% { translate: 0 -8px; filter: saturate(1.35) brightness(1.1); }
+}
+
+@keyframes pet-silly {
+  0% { translate: 0 0; rotate: -7deg; }
+  100% { translate: 0 -9px; rotate: 7deg; }
 }
 
 .goal-size-grid {
@@ -192,54 +232,15 @@
   cursor: pointer;
 }
 
-.goal-size-card input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.goal-size-card:has(input:checked) {
-  color: var(--color-heading);
-  border-color: rgba(250, 204, 21, 0.7);
-  box-shadow: inset 0 0 0 1px rgba(250, 204, 21, 0.35), 0 18px 50px rgba(250, 204, 21, 0.08);
-}
-
-.goal-size-card strong {
-  color: var(--color-heading);
-}
-
-.goal-size-card span {
-  color: var(--color-green);
-  font-weight: 900;
-}
-
-.goal-size-card small {
-  color: var(--color-muted);
-  line-height: 1.25;
-}
-
-.goal-reward {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  min-height: 24px;
-  padding: 0 8px;
-  border-radius: 999px;
-  color: #101210;
-  background: var(--color-gold);
-  font-weight: 900;
-}
+.goal-size-card input { position: absolute; opacity: 0; pointer-events: none; }
+.goal-size-card:has(input:checked) { color: var(--color-heading); border-color: rgba(250, 204, 21, 0.7); box-shadow: inset 0 0 0 1px rgba(250, 204, 21, 0.35), 0 18px 50px rgba(250, 204, 21, 0.08); }
+.goal-size-card strong { color: var(--color-heading); }
+.goal-size-card span { color: var(--color-green); font-weight: 900; }
+.goal-size-card small { color: var(--color-muted); line-height: 1.25; }
+.goal-reward { display: inline-flex; align-items: center; width: fit-content; min-height: 24px; padding: 0 8px; border-radius: 999px; color: #101210; background: var(--color-gold); font-weight: 900; }
 
 @media (max-width: 760px) {
-  .global-pet {
-    width: calc(var(--pet-size) * 0.78);
-  }
-
-  .global-pet-bubble {
-    display: none;
-  }
-
-  .goal-size-grid {
-    grid-template-columns: 1fr;
-  }
+  .global-pet { width: calc(var(--pet-size) * 0.78); }
+  .global-pet-bubble { display: none; }
+  .goal-size-grid { grid-template-columns: 1fr; }
 }
