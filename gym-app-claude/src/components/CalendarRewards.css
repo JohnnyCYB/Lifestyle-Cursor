@@ -129,7 +129,233 @@
   grid-column: 1 / -1;
 }
 
-@media (max-width: 720px) {
+.account-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 38px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(15, 17, 16, 0.72);
+  backdrop-filter: blur(12px);
+}
+
+.account-switcher svg {
+  margin: 0 3px 0 6px;
+  color: var(--color-muted);
+}
+
+.account-switcher button {
+  min-height: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--color-muted);
+  background: transparent;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.account-switcher button[aria-pressed='true'] {
+  color: #101210;
+  background: linear-gradient(135deg, var(--color-green), var(--color-gold));
+}
+
+.demo-mode .topbar,
+.demo-mode .brand-mark {
+  box-shadow: 0 0 34px rgba(168, 85, 247, 0.22);
+}
+
+.demo-mode .brand-mark {
+  background: linear-gradient(135deg, #a855f7, #facc15);
+}
+
+.mobile-polish .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  padding: 10px 0 14px;
+  background: linear-gradient(180deg, rgba(15, 17, 16, 0.96), rgba(15, 17, 16, 0.78), transparent);
+  backdrop-filter: blur(8px);
+}
+
+.mobile-polish .scanner-panel,
+.mobile-polish .scan-result,
+.mobile-polish .custom-card,
+.mobile-polish .goals-panel,
+.mobile-polish .goal-form,
+.mobile-polish .real-calendar-card,
+.mobile-polish .quest-board,
+.mobile-polish .weekly-panel,
+.mobile-polish .care-stage,
+.mobile-polish .gym-command-center {
+  border-radius: 16px;
+}
+
+.mobile-polish .care-layout {
+  align-items: start;
+}
+
+.mobile-polish .care-stage {
+  min-height: 0;
+}
+
+.mobile-polish .recommendation-card,
+.mobile-polish .movement-card,
+.mobile-polish .goal-row,
+.mobile-polish .quest-row,
+.mobile-polish .stat-tile,
+.mobile-polish .meter {
+  border-radius: 14px;
+}
+
+.mobile-polish .nutrition-habitat {
+  min-height: 300px;
+}
+
+@media (max-width: 1100px) {
+  .mobile-polish .app-shell {
+    padding-bottom: 88px;
+  }
+
+  .mobile-polish .app-rail {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    top: auto;
+    z-index: 80;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 22px;
+    background: rgba(15, 17, 16, 0.92);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.42);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .mobile-polish .app-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-polish .brand-lockup {
+    min-width: 52px;
+    width: 52px;
+    justify-content: center;
+  }
+
+  .mobile-polish .brand-lockup > span:last-child {
+    display: none;
+  }
+
+  .mobile-polish .brand-mark {
+    width: 42px;
+    height: 42px;
+  }
+
+  .mobile-polish .nav-list {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(58px, 1fr);
+    min-width: max-content;
+    flex: 1;
+    gap: 5px;
+  }
+
+  .mobile-polish .nav-button {
+    min-height: 52px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 8px;
+    font-size: 0.68rem;
+  }
+
+  .mobile-polish .nav-button[aria-current='page'] {
+    box-shadow: inset 0 -3px 0 var(--color-coral);
+  }
+}
+
+@media (max-width: 760px) {
+  .account-switcher {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .account-switcher button {
+    flex: 1;
+  }
+
+  .mobile-polish .app-main {
+    padding: 12px;
+  }
+
+  .mobile-polish .topbar {
+    margin-bottom: 14px;
+  }
+
+  .mobile-polish .topbar h1 {
+    font-size: clamp(2rem, 12vw, 2.8rem);
+  }
+
+  .mobile-polish .topbar-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .mobile-polish .metric-pill {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+    font-size: 0.78rem;
+  }
+
+  .mobile-polish .hero-panel,
+  .mobile-polish .split-panel,
+  .mobile-polish .gym-command-center,
+  .mobile-polish .progress-hero {
+    min-height: 0;
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .mobile-polish .hero-copy h2,
+  .mobile-polish .split-panel h2,
+  .mobile-polish .gym-command-center h2,
+  .mobile-polish .progress-hero h2 {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .mobile-polish .care-stage .pet-large {
+    --pet-size: min(260px, 76vw);
+  }
+
+  .mobile-polish .nutrition-habitat {
+    padding: 14px;
+  }
+
+  .mobile-polish .habitat-stage {
+    min-height: 240px;
+  }
+
+  .mobile-polish .scanner-panel,
+  .mobile-polish .scan-result,
+  .mobile-polish .custom-card,
+  .mobile-polish .goals-panel,
+  .mobile-polish .goal-form,
+  .mobile-polish .quest-board,
+  .mobile-polish .weekly-panel,
+  .mobile-polish .real-calendar-card {
+    padding: 14px;
+  }
+
   .real-calendar-grid {
     gap: 5px;
   }
