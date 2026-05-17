@@ -151,6 +151,13 @@ export const skillTrees = [
   { id: 'life', name: 'Life', perk: 'Turn personal goals into character growth', color: '#c084fc', milestones: [100, 300, 700] },
 ]
 
+export const unlockRewards = [
+  { id: 'bond-berry', title: 'Bond Berry', detail: 'First companion snack. Adds +25% bonus XP to the next meal log.', points: 500, icon: '🫐', multiplier: 1.25, hiddenUntil: 0 },
+  { id: 'iron-mango', title: 'Iron Mango', detail: 'Workout fuel. Adds +50% bonus XP to the next gym log.', points: 1500, icon: '🥭', multiplier: 1.5, hiddenUntil: 500 },
+  { id: 'mythic-starfruit', title: 'Mythic Starfruit', detail: 'Final-form food. Adds 2x XP to the next activity and belongs in the feed section.', points: 3500, icon: '🌟', multiplier: 2, hiddenUntil: 1500 },
+  { id: 'void-dragonfruit', title: 'Void Dragonfruit', detail: 'Special edition fruit for elite streaks. Adds 2x XP to the next big goal.', points: 5000, icon: '🐉', multiplier: 2, hiddenUntil: 3500 },
+]
+
 export const achievementRules = [
   { id: 'first-bond', title: 'First Bond', detail: 'Choose a companion', test: (profile) => Boolean(profile.petType) },
   { id: 'drake-shift', title: 'Second Form', detail: 'Reach 500 total points', test: (profile) => profile.points >= 500 },
@@ -178,6 +185,8 @@ export const defaultProfile = {
     { id: 'seed-goal-2', title: 'Drink 64 oz water', category: 'nutrition', size: 'small', points: 50, completed: false, createdAt: 'Starter' },
     { id: 'seed-goal-3', title: 'Eat one protein-focused meal', category: 'nutrition', size: 'small', points: 50, completed: false, createdAt: 'Starter' },
   ],
+  unlockedRewardIds: [],
+  rewardInventory: [],
   goalBacklogCursor: 3,
   petMotionMode: 'follow-roam',
   petPosition: { x: 68, y: 52 },
@@ -231,6 +240,8 @@ export function mergeProfile(savedProfile) {
           return { ...goal, size: goal.size ?? size.id, points: Number.isFinite(goal.points) ? goal.points : size.points }
         })
       : defaultProfile.lifeGoals,
+    unlockedRewardIds: Array.isArray(savedProfile?.unlockedRewardIds) ? savedProfile.unlockedRewardIds : defaultProfile.unlockedRewardIds,
+    rewardInventory: Array.isArray(savedProfile?.rewardInventory) ? savedProfile.rewardInventory : defaultProfile.rewardInventory,
     goalBacklogCursor: Number.isFinite(savedProfile?.goalBacklogCursor) ? savedProfile.goalBacklogCursor : defaultProfile.goalBacklogCursor,
     petMotionMode: savedProfile?.petMotionMode ?? defaultProfile.petMotionMode,
     petPosition: { x: clampPercent(savedProfile?.petPosition?.x ?? defaultProfile.petPosition.x), y: clampPercent(savedProfile?.petPosition?.y ?? defaultProfile.petPosition.y) },
