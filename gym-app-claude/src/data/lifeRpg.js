@@ -103,6 +103,17 @@ export const dailyQuests = [
   { id: 'focus', title: 'Focus Sigil', area: 'focus', label: 'Finish one deep-work block', points: 25, reaction: 'celebrate', care: { bond: 3, spark: 5 } },
 ]
 
+export const starterGoalBacklog = [
+  { title: 'Do a 15 min workout', category: 'gym', size: 'small', points: 50 },
+  { title: 'Drink 64 oz water', category: 'nutrition', size: 'small', points: 50 },
+  { title: 'Eat one protein-focused meal', category: 'nutrition', size: 'small', points: 50 },
+  { title: 'Walk for 10 minutes', category: 'gym', size: 'small', points: 50 },
+  { title: 'Stretch for 5 minutes', category: 'focus', size: 'small', points: 50 },
+  { title: 'Prep gym clothes for tomorrow', category: 'life', size: 'small', points: 50 },
+  { title: 'Log today’s food honestly', category: 'nutrition', size: 'small', points: 50 },
+  { title: 'Sleep setup: no phone for 10 minutes', category: 'focus', size: 'small', points: 50 },
+]
+
 export const gymMovements = [
   { id: 'squat', name: 'Squat', pattern: 'Lower', target: 'Quads, glutes, trunk', prescription: '3 x 5-8', points: 18 },
   { id: 'deadlift', name: 'Deadlift', pattern: 'Hinge', target: 'Posterior chain', prescription: '3 x 3-6', points: 22 },
@@ -118,13 +129,13 @@ export const recommendedWorkouts = [
   { id: 'core-conditioning', name: 'Core & Conditioning', focus: 'Engine', details: 'Bike 10 min, carries 4 rounds, dead bug 3x12', points: 55 },
 ]
 
-export const foodShortcuts = ['chicken bowl', 'salmon rice', 'greek yogurt', 'protein shake', 'veggie omelet']
+export const foodShortcuts = ['1 egg', '2 eggs and toast', 'chicken bowl', 'protein shake 34g protein', 'steak rice 650 calories 54g protein']
 
 export const goalCategories = [
   { id: 'gym', name: 'Gym', color: '#ff7a45' },
   { id: 'nutrition', name: 'Nutrition', color: '#34d399' },
   { id: 'focus', name: 'Focus', color: '#60a5fa' },
-  { id: 'life', name: 'Life', color: '#facc15' },
+  { id: 'life', name: 'Life', color: '#c084fc' },
 ]
 
 export const goalSizes = [
@@ -137,7 +148,7 @@ export const skillTrees = [
   { id: 'gym', name: 'Gym', perk: 'Unlock heavier quest bonuses', color: '#ff7a45', milestones: [120, 320, 640] },
   { id: 'nutrition', name: 'Nutrition', perk: 'Improve companion recovery', color: '#34d399', milestones: [100, 280, 580] },
   { id: 'focus', name: 'Focus', perk: 'Reduce missed-day penalties', color: '#60a5fa', milestones: [90, 240, 520] },
-  { id: 'life', name: 'Life', perk: 'Turn personal goals into character growth', color: '#facc15', milestones: [100, 300, 700] },
+  { id: 'life', name: 'Life', perk: 'Turn personal goals into character growth', color: '#c084fc', milestones: [100, 300, 700] },
 ]
 
 export const achievementRules = [
@@ -154,25 +165,23 @@ export const achievementRules = [
 export const defaultProfile = {
   userName: 'Player',
   petType: 'dragon',
-  points: 1280,
-  streak: 8,
-  care: { satiety: 72, energy: 66, bond: 84, spark: 58 },
-  settings: { animations: true, focusMode: false },
-  skillXp: { gym: 260, nutrition: 210, focus: 145, life: 60 },
-  weeklyPoints: [80, 95, 60, 110, 140, 90, 130],
+  points: 0,
+  streak: 1,
+  care: { satiety: 70, energy: 70, bond: 20, spark: 15 },
+  settings: { animations: true, focusMode: false, autoRefillGoals: true },
+  skillXp: { gym: 0, nutrition: 0, focus: 0, life: 0 },
+  weeklyPoints: [0, 0, 0, 0, 0, 0, 0],
   completedByDate: {},
   customWorkouts: [],
   lifeGoals: [
-    { id: 'seed-goal-1', title: 'Hit three workouts this week', category: 'gym', size: 'medium', points: 150, completed: false, createdAt: 'Seed' },
-    { id: 'seed-goal-2', title: 'Prep tomorrow before bed', category: 'life', size: 'small', points: 50, completed: false, createdAt: 'Seed' },
+    { id: 'seed-goal-1', title: 'Do a 15 min workout', category: 'gym', size: 'small', points: 50, completed: false, createdAt: 'Starter' },
+    { id: 'seed-goal-2', title: 'Drink 64 oz water', category: 'nutrition', size: 'small', points: 50, completed: false, createdAt: 'Starter' },
+    { id: 'seed-goal-3', title: 'Eat one protein-focused meal', category: 'nutrition', size: 'small', points: 50, completed: false, createdAt: 'Starter' },
   ],
+  goalBacklogCursor: 3,
   petMotionMode: 'follow-roam',
   petPosition: { x: 68, y: 52 },
-  ledger: [
-    { id: 'seed-1', label: 'Logged workout', points: 45, area: 'gym', time: 'Today' },
-    { id: 'seed-2', label: 'Protein-rich meal', points: 30, area: 'nutrition', time: 'Today' },
-    { id: 'seed-3', label: 'Deep-work block', points: 25, area: 'focus', time: 'Yesterday' },
-  ],
+  ledger: [],
 }
 
 export function clampMeter(value) {
@@ -222,6 +231,7 @@ export function mergeProfile(savedProfile) {
           return { ...goal, size: goal.size ?? size.id, points: Number.isFinite(goal.points) ? goal.points : size.points }
         })
       : defaultProfile.lifeGoals,
+    goalBacklogCursor: Number.isFinite(savedProfile?.goalBacklogCursor) ? savedProfile.goalBacklogCursor : defaultProfile.goalBacklogCursor,
     petMotionMode: savedProfile?.petMotionMode ?? defaultProfile.petMotionMode,
     petPosition: { x: clampPercent(savedProfile?.petPosition?.x ?? defaultProfile.petPosition.x), y: clampPercent(savedProfile?.petPosition?.y ?? defaultProfile.petPosition.y) },
     ledger: Array.isArray(savedProfile?.ledger) ? savedProfile.ledger : defaultProfile.ledger,
