@@ -25,262 +25,90 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html {
-  min-width: 320px;
-  background: var(--color-bg);
-}
-
-body {
-  min-width: 320px;
-  min-height: 100svh;
-  margin: 0;
-  background: var(--color-bg);
-}
-
-button,
-input {
-  letter-spacing: 0;
-}
-
-button:disabled {
-  cursor: not-allowed;
-}
-
-#root {
-  min-height: 100svh;
-}
+* { box-sizing: border-box; }
+html { min-width: 320px; background: var(--color-bg); }
+body { min-width: 320px; min-height: 100svh; margin: 0; background: var(--color-bg); }
+button, input { letter-spacing: 0; }
+button:disabled { cursor: not-allowed; }
+#root { min-height: 100svh; }
 
 /* Food habitat and goal-refill polish */
-.nutrition-layout {
-  align-items: start;
-}
+.nutrition-layout { align-items: start; }
+.nutrition-layout .nutrition-habitat { grid-column: 1 / -1; }
+.nutrition-habitat { position: relative; display: grid; grid-template-columns: minmax(250px, 0.55fr) minmax(0, 1fr); gap: 18px; min-height: 340px; padding: 18px; overflow: hidden; border: 1px solid rgba(168, 85, 247, 0.28); border-radius: 12px; background: radial-gradient(circle at 14% 14%, rgba(168, 85, 247, 0.22), transparent 36%), linear-gradient(160deg, rgba(15, 23, 42, 0.48), rgba(32, 39, 32, 0.92)); box-shadow: 0 26px 80px rgba(0, 0, 0, 0.34), inset 0 0 0 1px rgba(255, 255, 255, 0.03); }
+.habitat-copy { position: relative; z-index: 3; display: grid; align-content: center; gap: 12px; }
+.habitat-copy h2 { margin: 0; color: var(--color-heading); font-size: clamp(1.8rem, 4vw, 3.2rem); line-height: 0.98; }
+.habitat-copy p { max-width: 44ch; }
+.habitat-stage { position: relative; min-height: 300px; overflow: hidden; border: 1px solid rgba(192, 132, 252, 0.25); border-radius: 14px; background: radial-gradient(circle at 72% 28%, rgba(250, 204, 21, 0.18), transparent 24%), linear-gradient(180deg, #18213a 0%, #1f2a34 44%, #18251c 45%, #111714 100%); }
+.habitat-sky, .habitat-hills, .habitat-ground { position: absolute; inset: 0; pointer-events: none; }
+.habitat-sky { background: radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.18) 0 2px, transparent 3px), radial-gradient(circle at 38% 15%, rgba(255, 255, 255, 0.16) 0 1.5px, transparent 3px), radial-gradient(circle at 66% 18%, rgba(255, 255, 255, 0.2) 0 2px, transparent 3px), linear-gradient(180deg, rgba(96, 165, 250, 0.16), transparent 70%); }
+.habitat-hills { top: 34%; background: radial-gradient(ellipse at 18% 72%, rgba(52, 211, 153, 0.28) 0 34%, transparent 35%), radial-gradient(ellipse at 64% 72%, rgba(168, 85, 247, 0.18) 0 38%, transparent 39%), radial-gradient(ellipse at 92% 78%, rgba(250, 204, 21, 0.14) 0 36%, transparent 37%); opacity: 0.95; }
+.habitat-ground { top: 62%; background: radial-gradient(ellipse at 50% 78%, rgba(0, 0, 0, 0.34), transparent 44%), linear-gradient(180deg, rgba(52, 211, 153, 0.08), rgba(5, 8, 6, 0.72)); }
+.habitat-pet { position: absolute; left: 52%; bottom: 6px; z-index: 2; transform: translateX(-50%); transform-origin: center bottom; }
+.habitat-pet .pet-avatar { --pet-size: min(260px, 32vw); }
+.motion-ok .habitat-pet { animation: habitat-pet-idle 2.8s ease-in-out infinite; }
+.motion-ok .habitat-pet.fed { animation: habitat-pet-fed 0.8s ease-in-out 2; }
+.snack-basket { position: absolute; right: 16px; bottom: 14px; z-index: 4; display: grid; justify-items: center; gap: 6px; min-width: 120px; padding: 10px 12px; border: 1px solid rgba(250, 204, 21, 0.38); border-radius: 14px; color: var(--color-heading); background: rgba(15, 17, 16, 0.72); backdrop-filter: blur(8px); }
+.snack-basket span { color: var(--color-gold); font-size: 0.72rem; font-weight: 900; text-transform: uppercase; }
+.snack-basket small { color: var(--color-muted); font-weight: 800; }
+.snack-apple { width: 54px; height: 54px; display: grid; place-items: center; border: 0; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff7ed, #fb7185 42%, #b91c1c 74%); font-size: 2rem; box-shadow: 0 16px 26px rgba(0, 0, 0, 0.38), 0 0 22px rgba(251, 113, 133, 0.28); cursor: grab; }
+.snack-apple:active { cursor: grabbing; }
+.motion-ok .snack-apple { animation: snack-drop 0.65s cubic-bezier(.2, .85, .2, 1) both, fruit-bob 1.2s ease-in-out 0.7s infinite alternate; }
+.feed-drop-button { position: absolute; left: 16px; bottom: 16px; z-index: 4; }
+.fed-burst { position: absolute; left: 50%; top: 22%; z-index: 5; padding: 8px 12px; border-radius: 999px; color: #101210; background: var(--color-green); font-weight: 950; transform: translateX(-50%); box-shadow: 0 18px 34px rgba(52, 211, 153, 0.28); }
+.motion-ok .fed-burst { animation: fed-burst-pop 0.9s ease-out both; }
+.goal-control-row .secondary-button { min-height: 44px; }
+.goals-panel .helper-copy { font-size: 0.88rem; }
 
-.nutrition-layout .nutrition-habitat {
-  grid-column: 1 / -1;
-}
+/* Gym planner */
+.gym-command-center { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(280px, .9fr); gap: 16px; align-items: center; padding: 18px; border: 1px solid rgba(255, 122, 69, .22); border-radius: 14px; background: radial-gradient(circle at 8% 18%, rgba(255, 122, 69, .2), transparent 30%), var(--color-panel); box-shadow: var(--shadow-soft); }
+.gym-command-center h2 { margin: 0; color: var(--color-heading); font-size: clamp(2rem, 4vw, 3.4rem); line-height: 1; }
+.gym-command-center p { margin: 8px 0 0; color: var(--color-muted); }
+.gym-command-center.on-fire { border-color: rgba(249, 115, 22, .65); box-shadow: 0 0 44px rgba(249, 115, 22, .16), var(--shadow-soft); }
+.gym-streak-card { display: grid; justify-items: center; gap: 2px; min-width: 130px; padding: 14px; border-radius: 14px; background: linear-gradient(180deg, rgba(249, 115, 22, .18), rgba(250, 204, 21, .08)); border: 1px solid rgba(250, 204, 21, .25); }
+.gym-streak-card svg { color: var(--color-coral); }
+.gym-streak-card strong { color: var(--color-heading); font-size: 2.2rem; line-height: 1; }
+.gym-streak-card span { color: var(--color-muted); font-size: .78rem; font-weight: 800; text-transform: uppercase; }
+.mini-calendar { display: grid; grid-template-columns: auto repeat(7, 1fr); align-items: center; gap: 8px; padding: 12px; border-radius: 14px; background: var(--color-surface); border: 1px solid var(--color-border); }
+.mini-calendar > svg { color: var(--color-blue); }
+.calendar-day { display: grid; justify-items: center; gap: 2px; min-height: 54px; padding: 6px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); }
+.calendar-day small { color: var(--color-muted); font-size: .64rem; font-weight: 800; }
+.calendar-day strong { color: var(--color-heading); }
+.calendar-day.done { background: linear-gradient(180deg, rgba(52, 211, 153, .2), rgba(250, 204, 21, .12)); border-color: rgba(52, 211, 153, .42); }
+.workout-template-card { position: relative; }
+.workout-card-menu { position: absolute; top: 10px; right: 10px; z-index: 2; }
+.workout-edit-form { display: grid; gap: 8px; margin-top: 6px; }
+.workout-edit-form input { min-height: 40px; }
+.workout-days { display: inline-flex; width: fit-content; margin-top: 8px; padding: 4px 8px; border-radius: 999px; color: #dbeafe; background: rgba(96, 165, 250, .12); border: 1px solid rgba(96, 165, 250, .28); font-weight: 800; }
 
-.nutrition-habitat {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(250px, 0.55fr) minmax(0, 1fr);
-  gap: 18px;
-  min-height: 340px;
-  padding: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(168, 85, 247, 0.28);
-  border-radius: 12px;
-  background:
-    radial-gradient(circle at 14% 14%, rgba(168, 85, 247, 0.22), transparent 36%),
-    linear-gradient(160deg, rgba(15, 23, 42, 0.48), rgba(32, 39, 32, 0.92));
-  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.34), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-}
+/* Progress page upgrade */
+.progress-quest-layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr); gap: 18px; align-items: start; }
+.progress-hero { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: center; min-height: 360px; padding: 24px; overflow: hidden; border: 1px solid rgba(168, 85, 247, .34); border-radius: 14px; background: radial-gradient(circle at 82% 42%, rgba(168, 85, 247, .28), transparent 30%), linear-gradient(135deg, rgba(96, 165, 250, .08), rgba(15, 17, 16, .96)); box-shadow: var(--shadow-soft); }
+.progress-hero h2 { margin: 0 0 8px; color: var(--color-heading); font-size: clamp(2.4rem, 5vw, 4.8rem); line-height: .95; }
+.progress-hero p { max-width: 62ch; color: var(--color-muted); }
+.progress-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.progress-stat-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.quest-map { display: grid; gap: 12px; padding: 18px; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-panel); box-shadow: var(--shadow-soft); }
+.quest-map-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; padding: 14px; border-radius: 12px; background: linear-gradient(135deg, color-mix(in srgb, var(--quest-color) 12%, transparent), var(--color-surface)); border: 1px solid color-mix(in srgb, var(--quest-color) 28%, var(--color-border)); }
+.quest-node { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; color: #101210; background: var(--quest-color); box-shadow: 0 0 24px color-mix(in srgb, var(--quest-color) 35%, transparent); }
+.quest-map-row h3 { margin: 0; color: var(--color-heading); }
+.quest-map-row p { margin: 2px 0 10px; color: var(--color-muted); }
+.progress-badges { min-height: 420px; }
 
-.habitat-copy {
-  position: relative;
-  z-index: 3;
-  display: grid;
-  align-content: center;
-  gap: 12px;
-}
+@keyframes habitat-pet-idle { 0%, 100% { transform: translateX(-50%) translateY(0) scale(1); } 50% { transform: translateX(-50%) translateY(-8px) scale(1.01); } }
+@keyframes habitat-pet-fed { 0%, 100% { transform: translateX(-50%) translateY(0) scale(1); } 35% { transform: translateX(-50%) translateY(-18px) scale(1.08); } 70% { transform: translateX(-50%) translateY(-4px) scale(1.02); } }
+@keyframes snack-drop { from { transform: translateY(-120px) scale(0.6) rotate(-22deg); opacity: 0; } to { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; } }
+@keyframes fed-burst-pop { 0% { transform: translateX(-50%) translateY(12px) scale(0.7); opacity: 0; } 25% { opacity: 1; } 100% { transform: translateX(-50%) translateY(-34px) scale(1.08); opacity: 0; } }
 
-.habitat-copy h2 {
-  margin: 0;
-  color: var(--color-heading);
-  font-size: clamp(1.8rem, 4vw, 3.2rem);
-  line-height: 0.98;
+@media (max-width: 1100px) {
+  .gym-command-center, .progress-hero, .progress-quest-layout { grid-template-columns: 1fr; }
+  .progress-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-
-.habitat-copy p {
-  max-width: 44ch;
-}
-
-.habitat-stage {
-  position: relative;
-  min-height: 300px;
-  overflow: hidden;
-  border: 1px solid rgba(192, 132, 252, 0.25);
-  border-radius: 14px;
-  background:
-    radial-gradient(circle at 72% 28%, rgba(250, 204, 21, 0.18), transparent 24%),
-    linear-gradient(180deg, #18213a 0%, #1f2a34 44%, #18251c 45%, #111714 100%);
-}
-
-.habitat-sky,
-.habitat-hills,
-.habitat-ground {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.habitat-sky {
-  background:
-    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.18) 0 2px, transparent 3px),
-    radial-gradient(circle at 38% 15%, rgba(255, 255, 255, 0.16) 0 1.5px, transparent 3px),
-    radial-gradient(circle at 66% 18%, rgba(255, 255, 255, 0.2) 0 2px, transparent 3px),
-    linear-gradient(180deg, rgba(96, 165, 250, 0.16), transparent 70%);
-}
-
-.habitat-hills {
-  top: 34%;
-  background:
-    radial-gradient(ellipse at 18% 72%, rgba(52, 211, 153, 0.28) 0 34%, transparent 35%),
-    radial-gradient(ellipse at 64% 72%, rgba(168, 85, 247, 0.18) 0 38%, transparent 39%),
-    radial-gradient(ellipse at 92% 78%, rgba(250, 204, 21, 0.14) 0 36%, transparent 37%);
-  opacity: 0.95;
-}
-
-.habitat-ground {
-  top: 62%;
-  background:
-    radial-gradient(ellipse at 50% 78%, rgba(0, 0, 0, 0.34), transparent 44%),
-    linear-gradient(180deg, rgba(52, 211, 153, 0.08), rgba(5, 8, 6, 0.72));
-}
-
-.habitat-pet {
-  position: absolute;
-  left: 52%;
-  bottom: 6px;
-  z-index: 2;
-  transform: translateX(-50%);
-  transform-origin: center bottom;
-}
-
-.habitat-pet .pet-avatar {
-  --pet-size: min(260px, 32vw);
-}
-
-.motion-ok .habitat-pet {
-  animation: habitat-pet-idle 2.8s ease-in-out infinite;
-}
-
-.motion-ok .habitat-pet.fed {
-  animation: habitat-pet-fed 0.8s ease-in-out 2;
-}
-
-.snack-basket {
-  position: absolute;
-  right: 16px;
-  bottom: 14px;
-  z-index: 4;
-  display: grid;
-  justify-items: center;
-  gap: 6px;
-  min-width: 120px;
-  padding: 10px 12px;
-  border: 1px solid rgba(250, 204, 21, 0.38);
-  border-radius: 14px;
-  color: var(--color-heading);
-  background: rgba(15, 17, 16, 0.72);
-  backdrop-filter: blur(8px);
-}
-
-.snack-basket span {
-  color: var(--color-gold);
-  font-size: 0.72rem;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.snack-basket small {
-  color: var(--color-muted);
-  font-weight: 800;
-}
-
-.snack-apple {
-  width: 54px;
-  height: 54px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff7ed, #fb7185 42%, #b91c1c 74%);
-  font-size: 2rem;
-  box-shadow: 0 16px 26px rgba(0, 0, 0, 0.38), 0 0 22px rgba(251, 113, 133, 0.28);
-  cursor: grab;
-}
-
-.snack-apple:active {
-  cursor: grabbing;
-}
-
-.motion-ok .snack-apple {
-  animation: snack-drop 0.65s cubic-bezier(.2, .85, .2, 1) both, fruit-bob 1.2s ease-in-out 0.7s infinite alternate;
-}
-
-.feed-drop-button {
-  position: absolute;
-  left: 16px;
-  bottom: 16px;
-  z-index: 4;
-}
-
-.fed-burst {
-  position: absolute;
-  left: 50%;
-  top: 22%;
-  z-index: 5;
-  padding: 8px 12px;
-  border-radius: 999px;
-  color: #101210;
-  background: var(--color-green);
-  font-weight: 950;
-  transform: translateX(-50%);
-  box-shadow: 0 18px 34px rgba(52, 211, 153, 0.28);
-}
-
-.motion-ok .fed-burst {
-  animation: fed-burst-pop 0.9s ease-out both;
-}
-
-.goal-control-row .secondary-button {
-  min-height: 44px;
-}
-
-.goals-panel .helper-copy {
-  font-size: 0.88rem;
-}
-
-@keyframes habitat-pet-idle {
-  0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
-  50% { transform: translateX(-50%) translateY(-8px) scale(1.01); }
-}
-
-@keyframes habitat-pet-fed {
-  0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
-  35% { transform: translateX(-50%) translateY(-18px) scale(1.08); }
-  70% { transform: translateX(-50%) translateY(-4px) scale(1.02); }
-}
-
-@keyframes snack-drop {
-  from { transform: translateY(-120px) scale(0.6) rotate(-22deg); opacity: 0; }
-  to { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
-}
-
-@keyframes fed-burst-pop {
-  0% { transform: translateX(-50%) translateY(12px) scale(0.7); opacity: 0; }
-  25% { opacity: 1; }
-  100% { transform: translateX(-50%) translateY(-34px) scale(1.08); opacity: 0; }
-}
-
 @media (max-width: 900px) {
-  .nutrition-habitat {
-    grid-template-columns: 1fr;
-  }
-
-  .habitat-copy {
-    align-content: start;
-  }
-
-  .habitat-stage {
-    min-height: 280px;
-  }
-
-  .habitat-pet .pet-avatar {
-    --pet-size: min(220px, 54vw);
-  }
+  .nutrition-habitat { grid-template-columns: 1fr; }
+  .habitat-copy { align-content: start; }
+  .habitat-stage { min-height: 280px; }
+  .habitat-pet .pet-avatar { --pet-size: min(220px, 54vw); }
+  .mini-calendar { grid-template-columns: repeat(4, 1fr); }
+  .progress-stat-grid { grid-template-columns: 1fr; }
 }
