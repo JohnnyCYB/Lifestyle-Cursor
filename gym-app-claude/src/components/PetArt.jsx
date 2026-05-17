@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import './PetArt.css'
 
 const petStyles = {
@@ -6,6 +6,9 @@ const petStyles = {
   monkey: { title: 'monkey', base: ['#f7c477', '#9a5726', '#30170d'], accent: '#facc15', glow: '#f59e0b', ears: true, tail: 'curl', flex: true },
   wolf: { title: 'cyber wolf', base: ['#7dd3fc', '#2563eb', '#07101f'], accent: '#22d3ee', glow: '#38bdf8', ears: 'sharp', tail: 'blade', cyber: true },
   titan: { title: 'stone titan', base: ['#d8f99b', '#657385', '#151b25'], accent: '#bef264', glow: '#84cc16', crystals: true, flex: true, block: true },
+  panda: { title: 'panda', base: ['#f8fafc', '#18181b', '#09090b'], accent: '#a855f7', glow: '#c084fc', ears: true, tail: 'curl', flex: true },
+  bull: { title: 'molten bull', base: ['#fb923c', '#7c2d12', '#1f1028'], accent: '#a855f7', glow: '#f97316', horns: true, flame: true, tail: 'flame', flex: true },
+  raptor: { title: 'void raptor', base: ['#a855f7', '#312e81', '#111827'], accent: '#f59e0b', glow: '#a855f7', tail: 'blade', flex: true },
   phoenix: { title: 'phoenix', base: ['#fff08a', '#fb6a3a', '#7c1d12'], accent: '#fde047', glow: '#ef4444', wing: true, flame: true, tail: 'feather', beak: true },
 }
 
@@ -13,25 +16,43 @@ const assetExtensions = ['webp', 'png', 'svg']
 
 export const petAssetPath = (id, stageIndex, extension = 'webp') => `/assets/pets/${id}/stage-${Math.max(0, Math.min(3, stageIndex))}.${extension}`
 
-export default function PetArt({ id, stageIndex, mood = 'idle', variant = 'preview' }) {
+export const petPoseAssetPath = (id, stageIndex, pose, extension = 'webp') =>
+  `/assets/pets/${id}/stage-${Math.max(0, Math.min(3, stageIndex))}/${pose}.${extension}`
+
+function buildAssetCandidates(id, stage, pose) {
+  const candidates = []
+  if (pose) {
+    for (const extension of assetExtensions) candidates.push(petPoseAssetPath(id, stage, pose, extension))
+  }
+  for (const extension of assetExtensions) candidates.push(petAssetPath(id, stage, extension))
+  return candidates
+}
+
+export default function PetArt({ id, stageIndex, mood = 'idle', variant = 'preview', pose = null }) {
   const uid = useId().replace(/:/g, '')
   const stage = Math.max(0, Math.min(3, stageIndex))
   const style = petStyles[id] ?? petStyles.dragon
+  const assetCandidates = useMemo(() => buildAssetCandidates(id, stage, pose), [id, stage, pose])
   const [assetIndex, setAssetIndex] = useState(0)
-  const assetMissing = assetIndex >= assetExtensions.length
-  const src = assetMissing ? '' : petAssetPath(id, stage, assetExtensions[assetIndex])
+  const assetMissing = assetIndex >= assetCandidates.length
+  const src = assetMissing ? '' : assetCandidates[assetIndex]
+
+  useEffect(() => {
+    setAssetIndex(0)
+  }, [id, stage, pose])
 
   return (
     <span
-      className={`pet-art-shell pet-art-${variant} pet-art-${id} pet-art-stage-${stage} ${assetMissing ? 'pet-art-asset-missing' : 'pet-art-asset-ready'}`}
+      className={`pet-art-shell pet-art-${variant} pet-art-${id} pet-art-stage-${stage} ${pose ? `pet-art-pose-${pose}` : ''} ${assetMissing ? 'pet-art-asset-missing' : 'pet-art-asset-ready'}`}
       data-pet-id={id}
       data-stage-index={stage}
+      data-pose={pose ?? 'default'}
     >
       {!assetMissing ? (
         <img
           className="pet-art-image"
           src={src}
-          alt={`${style.title} stage ${stage + 1}`}
+          alt={`${style.title} stage ${stage + 1}${pose ? ` ${pose}` : ''}`}
           draggable="false"
           onError={() => setAssetIndex((current) => current + 1)}
         />
