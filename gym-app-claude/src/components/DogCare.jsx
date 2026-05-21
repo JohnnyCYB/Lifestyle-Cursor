@@ -146,6 +146,8 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
   const [newWeight, setNewWeight] = useState('')
   const [newWeightNote, setNewWeightNote] = useState('')
   const [walkMinutes, setWalkMinutes] = useState('')
+  const [newPetForm, setNewPetForm] = useState({ name: '', species: 'Dog', breed: '' })
+  const [dogCelebrating, setDogCelebrating] = useState(false)
 
   const completedCount = dogDailyTasks.filter((task) => isDoneToday(pet, todayKey, task.id)).length
   const dailyPercent = Math.round((completedCount / dogDailyTasks.length) * 100)
@@ -158,6 +160,12 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
   const upcomingVaccines = useMemo(() => [...pet.vaccines].sort((a, b) => (a.nextDue || '9999').localeCompare(b.nextDue || '9999')), [pet.vaccines])
   const latestBath = pet.bathHistory?.[0]
   const latestWeight = pet.weightHistory?.[0]?.weight || pet.weight || 'Not logged'
+  const careChart = [
+    { label: 'Daily', value: dailyPercent },
+    { label: 'Walks', value: exercisePercent },
+    { label: 'Shots', value: upcomingVaccines[0]?.nextDue ? 80 : 18 },
+    { label: 'Appts', value: upcomingAppointments.length ? 74 : 22 },
+  ]
 
   function updateDogCare(nextDogCare) {
     onDogCareChange(nextDogCare)
@@ -171,9 +179,20 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
     })
   }
 
-  function addPet() {
-    const newPet = createPet({ id: `real-pet-${Date.now()}`, name: `Pet ${dogCare.pets.length + 1}`, breed: '', color: '', collar: '' })
+  function addPet(event) {
+    event.preventDefault()
+    const name = newPetForm.name.trim()
+    if (!name) return
+    const newPet = createPet({
+      id: `real-pet-${Date.now()}`,
+      name,
+      species: newPetForm.species.trim() || 'Dog',
+      breed: newPetForm.breed.trim(),
+      color: '',
+      collar: '',
+    })
     updateDogCare({ pets: [...dogCare.pets, newPet], activePetId: newPet.id })
+    setNewPetForm({ name: '', species: 'Dog', breed: '' })
   }
 
   function deleteActivePet() {
@@ -182,10 +201,17 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
     updateDogCare({ pets: remaining, activePetId: remaining[0].id })
   }
 
+  function celebrateDog() {
+    setDogCelebrating(true)
+    window.setTimeout(() => setDogCelebrating(false), 1200)
+  }
+
   function toggleTask(taskId) {
     const todayDone = pet.dailyDone?.[todayKey] ?? []
-    const nextToday = todayDone.includes(taskId) ? todayDone.filter((id) => id !== taskId) : [...todayDone, taskId]
+    const wasDone = todayDone.includes(taskId)
+    const nextToday = wasDone ? todayDone.filter((id) => id !== taskId) : [...todayDone, taskId]
     updatePet({ dailyDone: { ...(pet.dailyDone ?? {}), [todayKey]: nextToday } })
+    if (!wasDone) celebrateDog()
   }
 
   function addWalk(event) {
@@ -201,6 +227,7 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
       },
     })
     setWalkMinutes('')
+    celebrateDog()
   }
 
   function addReminder(event) {
@@ -276,12 +303,13 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
 
   function logBath() {
     updatePet({ bathHistory: [{ id: `bath-${Date.now()}`, date: todayKeyString(), note: 'Bath / wash logged' }, ...(pet.bathHistory ?? [])].slice(0, 24) })
+    celebrateDog()
   }
 
   return (
-    <div className="dog-care-layout pet-profile-system">
+    <div className={dogCelebrating ? 'dog-care-layout pet-profile-system dog-celebrating' : 'dog-care-layout pet-profile-system'}>
       <section className="dog-hero-card dog-hero-photo-card">
-        <div className="dog-photo-frame"><div className="dog-photo-fallback">🐶</div></div>
+        <div className="dog-photo-frame"><div className="dog-photo-fallback">🐶</div><span className="dog-hero-hearts">♥ ♥ ✨</span></div>
         <div className="dog-hero-copy">
           <span className="eyebrow">Real pet profile</span>
           <h2>{pet.name || 'Your pet'}</h2>
@@ -291,6 +319,39 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
             <div className="dog-progress-ring walk-ring" style={{ '--dog-progress': `${exercisePercent}%` }}><strong>{todayExercise.minutes ?? 0}m</strong><span>walk time</span></div>
             <div className="dog-progress-ring weight-ring" style={{ '--dog-progress': '100%' }}><strong>{latestWeight}</strong><span>latest weight</span></div>
           </div>
+        </div>
+      </section>
+
+      <section className="dog-card dog-command-dashboard">
+        <div className="section-heading"><span className="eyebrow">Today dashboard</span><h2>Care command center</h2></div>
+        <div className="dog-chart-row">
+          {careChart.map((item) => <div className="dog-chart-bar" key={item.label} style={{ '--bar': `${item.value}%` }}><span>{item.label}</span><strong>{item.value}%</strong></div>)}
+        </div>
+        <div className="dog-dashboard-actions">
+          <button className="primary-button" type="button" onClick={() => toggleTask('fresh-water')}><Utensils size={17} />Fresh water</button>
+          <button className="primary-button" type="button" onClick={() => toggleTask('walk-one')}><PawPrint size={17} />Log walk task</button>
+          <button className="primary-button" type="button" onClick={logBath}><Plus size={17} />Bath today</button>
+        </div>
+      </section>
+
+      <section className="dog-card dog-daily-card">
+        <div className="section-heading"><span className="eyebrow">Daily care</span><h2>Today’s checklist</h2></div>
+        <div className="dog-task-list">
+          {dogDailyTasks.map((task) => {
+            const Icon = task.icon
+            const done = isDoneToday(pet, todayKey, task.id)
+            return <button className={done ? 'dog-task done' : 'dog-task'} type="button" key={task.id} onClick={() => toggleTask(task.id)}><Icon size={20} /><span><strong>{task.label}</strong><small>{task.detail}</small></span>{done ? <CheckCircle2 size={20} /> : <Plus size={20} />}</button>
+          })}
+        </div>
+      </section>
+
+      <section className="dog-card dog-summary-card">
+        <div className="section-heading"><span className="eyebrow">At a glance</span><h2>What matters next</h2></div>
+        <div className="dog-summary-grid">
+          <article><CalendarDays size={20} /><span>Next reminder</span><strong>{nextReminder ? getDueStatus(nextReminder.nextDue).label : 'None'}</strong><small>{nextReminder?.title ?? 'Add care reminders'}</small></article>
+          <article><Syringe size={20} /><span>Next shot</span><strong>{upcomingVaccines[0] ? getDueStatus(upcomingVaccines[0].nextDue).label : 'None'}</strong><small>{upcomingVaccines[0]?.name ?? 'Log vaccines'}</small></article>
+          <article><PawPrint size={20} /><span>Last bath</span><strong>{latestBath?.date ?? 'Not logged'}</strong><small>Bath / grooming history</small></article>
+          <article><Weight size={20} /><span>Size / weight</span><strong>{pet.size || latestWeight}</strong><small>{pet.weightHistory?.length ? `${pet.weightHistory.length} weigh-ins` : 'Start tracking'}</small></article>
         </div>
       </section>
 
@@ -304,18 +365,33 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
               <small>{candidate.breed || candidate.species || 'Dog'}</small>
             </button>
           ))}
-          <button className="add-pet-card" type="button" onClick={addPet}><Plus size={18} /><strong>Add pet</strong><small>New profile</small></button>
         </div>
+        <form className="add-pet-form" onSubmit={addPet}>
+          <input value={newPetForm.name} onChange={(event) => setNewPetForm((current) => ({ ...current, name: event.target.value }))} placeholder="New pet name" />
+          <input value={newPetForm.species} onChange={(event) => setNewPetForm((current) => ({ ...current, species: event.target.value }))} placeholder="Species" />
+          <input value={newPetForm.breed} onChange={(event) => setNewPetForm((current) => ({ ...current, breed: event.target.value }))} placeholder="Breed" />
+          <button className="primary-button" type="submit"><Plus size={17} />Add pet</button>
+        </form>
         {dogCare.pets.length > 1 && <button className="secondary-button danger-soft" type="button" onClick={deleteActivePet}><Trash2 size={16} />Remove active pet</button>}
       </section>
 
-      <section className="dog-card dog-summary-card">
-        <div className="section-heading"><span className="eyebrow">At a glance</span><h2>What matters next</h2></div>
-        <div className="dog-summary-grid">
-          <article><CalendarDays size={20} /><span>Next reminder</span><strong>{nextReminder ? getDueStatus(nextReminder.nextDue).label : 'None'}</strong><small>{nextReminder?.title ?? 'Add care reminders'}</small></article>
-          <article><Syringe size={20} /><span>Next shot</span><strong>{upcomingVaccines[0] ? getDueStatus(upcomingVaccines[0].nextDue).label : 'None'}</strong><small>{upcomingVaccines[0]?.name ?? 'Log vaccines'}</small></article>
-          <article><PawPrint size={20} /><span>Last bath</span><strong>{latestBath?.date ?? 'Not logged'}</strong><small>Bath / grooming history</small></article>
-          <article><Weight size={20} /><span>Size / weight</span><strong>{pet.size || latestWeight}</strong><small>{pet.weightHistory?.length ? `${pet.weightHistory.length} weigh-ins` : 'Start tracking'}</small></article>
+      <section className="dog-card dog-exercise-card">
+        <div className="section-heading"><span className="eyebrow">Exercise</span><h2>Walks & play</h2></div>
+        <div className="dog-exercise-dashboard"><div><strong>{todayExercise.walks ?? 0}</strong><span>walks today</span></div><div><strong>{todayExercise.minutes ?? 0}</strong><span>minutes</span></div><div><strong>{walkGoal}</strong><span>minute goal</span></div></div>
+        <form className="dog-walk-form" onSubmit={addWalk}><input type="number" min="1" value={walkMinutes} onChange={(event) => setWalkMinutes(event.target.value)} placeholder="Minutes walked" /><button className="primary-button" type="submit"><PawPrint size={17} />Log walk</button></form>
+        <label className="dog-single-field"><span>Daily exercise goal</span><input value={pet.exerciseGoal} onChange={(event) => updatePet({ exerciseGoal: event.target.value })} placeholder="2 walks + play time" /></label>
+        <label className="dog-single-field"><span>Walk minutes goal</span><input type="number" min="1" value={pet.walkMinutesGoal} onChange={(event) => updatePet({ walkMinutesGoal: event.target.value })} /></label>
+      </section>
+
+      <section className="dog-card dog-food-card">
+        <div className="section-heading"><span className="eyebrow">Food</span><h2>Food type & feeding plan</h2></div>
+        <div className="dog-form-grid">
+          <label><span>Food brand</span><input value={pet.foodBrand} onChange={(event) => updatePet({ foodBrand: event.target.value })} placeholder="Brand name" /></label>
+          <label><span>Food type</span><input value={pet.foodType} onChange={(event) => updatePet({ foodType: event.target.value })} placeholder="Kibble, wet, fresh, mix" /></label>
+          <label><span>Amount</span><input value={pet.feedingAmount} onChange={(event) => updatePet({ feedingAmount: event.target.value })} placeholder="Example: 1 cup twice daily" /></label>
+          <label><span>Schedule</span><input value={pet.feedingSchedule} onChange={(event) => updatePet({ feedingSchedule: event.target.value })} placeholder="Morning + evening" /></label>
+          <label><span>Treats</span><input value={pet.treats} onChange={(event) => updatePet({ treats: event.target.value })} placeholder="Training treats, dental chews" /></label>
+          <label><span>Allergies / avoid</span><input value={pet.allergies} onChange={(event) => updatePet({ allergies: event.target.value })} placeholder="Chicken, grains, etc." /></label>
         </div>
       </section>
 
@@ -337,37 +413,6 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
           <label><span>Vet / clinic</span><input value={pet.vetName} onChange={(event) => updatePet({ vetName: event.target.value })} placeholder="Vet / clinic" /></label>
           <label><span>Insurance / plan</span><input value={pet.insurance ?? ''} onChange={(event) => updatePet({ insurance: event.target.value })} placeholder="Optional" /></label>
         </div>
-      </section>
-
-      <section className="dog-card dog-daily-card">
-        <div className="section-heading"><span className="eyebrow">Daily care</span><h2>Today’s checklist</h2></div>
-        <div className="dog-task-list">
-          {dogDailyTasks.map((task) => {
-            const Icon = task.icon
-            const done = isDoneToday(pet, todayKey, task.id)
-            return <button className={done ? 'dog-task done' : 'dog-task'} type="button" key={task.id} onClick={() => toggleTask(task.id)}><Icon size={20} /><span><strong>{task.label}</strong><small>{task.detail}</small></span>{done ? <CheckCircle2 size={20} /> : <Plus size={20} />}</button>
-          })}
-        </div>
-      </section>
-
-      <section className="dog-card dog-food-card">
-        <div className="section-heading"><span className="eyebrow">Food</span><h2>Food type & feeding plan</h2></div>
-        <div className="dog-form-grid">
-          <label><span>Food brand</span><input value={pet.foodBrand} onChange={(event) => updatePet({ foodBrand: event.target.value })} placeholder="Brand name" /></label>
-          <label><span>Food type</span><input value={pet.foodType} onChange={(event) => updatePet({ foodType: event.target.value })} placeholder="Kibble, wet, fresh, mix" /></label>
-          <label><span>Amount</span><input value={pet.feedingAmount} onChange={(event) => updatePet({ feedingAmount: event.target.value })} placeholder="Example: 1 cup twice daily" /></label>
-          <label><span>Schedule</span><input value={pet.feedingSchedule} onChange={(event) => updatePet({ feedingSchedule: event.target.value })} placeholder="Morning + evening" /></label>
-          <label><span>Treats</span><input value={pet.treats} onChange={(event) => updatePet({ treats: event.target.value })} placeholder="Training treats, dental chews" /></label>
-          <label><span>Allergies / avoid</span><input value={pet.allergies} onChange={(event) => updatePet({ allergies: event.target.value })} placeholder="Chicken, grains, etc." /></label>
-        </div>
-      </section>
-
-      <section className="dog-card dog-exercise-card">
-        <div className="section-heading"><span className="eyebrow">Exercise</span><h2>Walks & play</h2></div>
-        <div className="dog-exercise-dashboard"><div><strong>{todayExercise.walks ?? 0}</strong><span>walks today</span></div><div><strong>{todayExercise.minutes ?? 0}</strong><span>minutes</span></div><div><strong>{walkGoal}</strong><span>minute goal</span></div></div>
-        <form className="dog-walk-form" onSubmit={addWalk}><input type="number" min="1" value={walkMinutes} onChange={(event) => setWalkMinutes(event.target.value)} placeholder="Minutes walked" /><button className="primary-button" type="submit"><PawPrint size={17} />Log walk</button></form>
-        <label className="dog-single-field"><span>Daily exercise goal</span><input value={pet.exerciseGoal} onChange={(event) => updatePet({ exerciseGoal: event.target.value })} placeholder="2 walks + play time" /></label>
-        <label className="dog-single-field"><span>Walk minutes goal</span><input type="number" min="1" value={pet.walkMinutesGoal} onChange={(event) => updatePet({ walkMinutesGoal: event.target.value })} /></label>
       </section>
 
       <section className="dog-card dog-weight-card">
