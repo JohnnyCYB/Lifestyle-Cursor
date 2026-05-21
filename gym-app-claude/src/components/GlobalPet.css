@@ -54,6 +54,47 @@
   transform: translateX(-50%);
 }
 
+.mini-dog-companion {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  z-index: 8;
+  width: clamp(52px, calc(var(--pet-size) * 0.23), 92px);
+  height: clamp(52px, calc(var(--pet-size) * 0.23), 92px);
+  transform-origin: center bottom;
+  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.42));
+}
+
+.mini-dog-photo {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.08)),
+    url('/assets/dog/silly-dog-photo.svg');
+  background-size: 180%;
+  background-position: 50% 34%;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.18), inset 0 0 20px rgba(0, 0, 0, 0.34);
+  animation: mini-dog-wiggle 1.7s ease-in-out infinite;
+}
+
+.mini-dog-running .mini-dog-photo {
+  animation: mini-dog-run 0.42s ease-in-out infinite;
+}
+
+.mini-dog-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -12%;
+  width: 82%;
+  height: 18%;
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.36), transparent 72%);
+  transform: translateX(-50%);
+}
+
 .pet-emotes { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 .emote-flip { transform: scaleX(-1); }
 .emote-heart { position: absolute; top: 4%; left: 58%; color: #fb7185; font-size: 1.1rem; font-weight: 900; animation: emote-float 0.9s ease-out infinite alternate; text-shadow: 0 0 12px rgba(251, 113, 133, 0.8); }
@@ -146,6 +187,8 @@
 .reaction-silly .pet-art-image,
 .reaction-silly .monster-svg { animation: pet-silly 0.7s ease-in-out infinite alternate; }
 
+@keyframes mini-dog-wiggle { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-5px) rotate(3deg); } }
+@keyframes mini-dog-run { 0%, 100% { transform: translateY(0) rotate(-8deg) scale(0.98); } 50% { transform: translateY(-8px) rotate(8deg) scale(1.04); } }
 @keyframes ember-flicker { 0% { opacity: 0.55; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1.15); } }
 @keyframes flame-pulse { 0% { opacity: 0.82; } 100% { opacity: 1; } }
 @keyframes aura-breathe { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
@@ -190,5 +233,6 @@
 
 @media (max-width: 760px) {
   .global-pet { width: calc(var(--pet-size) * 0.82); }
+  .mini-dog-companion { width: 54px; height: 54px; }
   .goal-size-grid { grid-template-columns: 1fr; }
 }
