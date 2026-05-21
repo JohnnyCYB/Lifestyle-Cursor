@@ -164,6 +164,9 @@ export default function GlobalPet({
     wolf: [0, -6, -4, -6, 0],
     titan: [0, -12, 0, -12, 0],
     phoenix: [0, -14, -6, -14, 0],
+    panda: [0, -10, 0, -7, 0],
+    raptor: [0, -10, 0, -6, 0],
+    bull: [0, -8, 0, -5, 0],
   }
   const hopY = hopByPet[companion.id] ?? hopByPet.dragon
   const hopDuration = companion.id === 'wolf' ? 0.28 : companion.id === 'titan' ? 0.55 : 0.42
@@ -198,15 +201,6 @@ export default function GlobalPet({
         <PetArt id={companion.id} stageIndex={stageIndex} mood={mood} />
       </motion.div>
       <span className="global-pet-ground" aria-hidden="true" />
-      <motion.div
-        className={`mini-dog-companion ${isMoving ? 'mini-dog-running' : 'mini-dog-idle'} facing-${facing}`}
-        aria-hidden="true"
-        animate={isMoving ? { x: facing === 'left' ? 84 : -84, y: [0, -6, 0] } : { x: facing === 'left' ? 74 : -74, y: [0, -3, 0] }}
-        transition={{ duration: isMoving ? 0.45 : 1.6, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <span className="mini-dog-photo" />
-        <span className="mini-dog-shadow" />
-      </motion.div>
     </motion.div>
   )
 }
