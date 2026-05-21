@@ -198,6 +198,15 @@ export default function GlobalPet({
         <PetArt id={companion.id} stageIndex={stageIndex} mood={mood} />
       </motion.div>
       <span className="global-pet-ground" aria-hidden="true" />
+      <motion.div
+        className={`mini-dog-companion ${isMoving ? 'mini-dog-running' : 'mini-dog-idle'} facing-${facing}`}
+        aria-hidden="true"
+        animate={isMoving ? { x: facing === 'left' ? 84 : -84, y: [0, -6, 0] } : { x: facing === 'left' ? 74 : -74, y: [0, -3, 0] }}
+        transition={{ duration: isMoving ? 0.45 : 1.6, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <span className="mini-dog-photo" />
+        <span className="mini-dog-shadow" />
+      </motion.div>
     </motion.div>
   )
 }
