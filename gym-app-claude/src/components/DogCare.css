@@ -5,6 +5,10 @@
   align-items: start;
 }
 
+.pet-profile-system {
+  grid-template-columns: minmax(0, 0.92fr) minmax(380px, 0.82fr);
+}
+
 .dog-hero-card,
 .dog-card {
   border: 1px solid rgba(52, 211, 153, 0.18);
@@ -17,8 +21,8 @@
   grid-column: 1 / -1;
   position: relative;
   display: grid;
-  grid-template-columns: minmax(280px, 0.48fr) minmax(0, 1fr);
-  min-height: 350px;
+  grid-template-columns: minmax(260px, 0.44fr) minmax(0, 1fr);
+  min-height: 390px;
   gap: 0;
   align-items: stretch;
   padding: 0;
@@ -31,12 +35,14 @@
 
 .dog-photo-frame {
   position: relative;
-  min-height: 350px;
+  min-height: 390px;
   background-image:
-    linear-gradient(90deg, rgba(10, 12, 11, 0.12), rgba(10, 12, 11, 0.82)),
-    url('/assets/dog/silly-dog-photo.svg');
-  background-size: cover;
-  background-position: center;
+    radial-gradient(circle at 50% 76%, rgba(0, 0, 0, 0.42), transparent 38%),
+    url('/assets/dog/real-dog-sit.webp'),
+    linear-gradient(135deg, rgba(52, 211, 153, 0.16), rgba(250, 204, 21, 0.12));
+  background-size: 78% auto, min(78%, 360px) auto, cover;
+  background-repeat: no-repeat;
+  background-position: center bottom, center bottom 8px, center;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -45,8 +51,8 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 45% 42%, transparent 28%, rgba(0, 0, 0, 0.28) 88%),
-    linear-gradient(180deg, transparent 48%, rgba(0, 0, 0, 0.46));
+    radial-gradient(circle at 56% 50%, transparent 24%, rgba(0, 0, 0, 0.18) 84%),
+    linear-gradient(90deg, transparent 58%, rgba(7, 10, 9, 0.58));
 }
 
 .dog-photo-fallback {
@@ -100,6 +106,11 @@
   background: linear-gradient(90deg, rgba(250, 204, 21, 0.18) var(--dog-progress), rgba(255,255,255,0.07) var(--dog-progress));
 }
 
+.dog-progress-ring.weight-ring {
+  border-color: rgba(168, 85, 247, 0.36);
+  background: linear-gradient(90deg, rgba(168, 85, 247, 0.18) var(--dog-progress), rgba(255,255,255,0.07) var(--dog-progress));
+}
+
 .dog-progress-ring strong {
   color: var(--color-green);
 }
@@ -119,8 +130,15 @@
 
 .dog-reminder-card,
 .dog-notes-card,
-.dog-vaccine-card {
+.dog-vaccine-card,
+.dog-appointment-card,
+.dog-weight-card {
   grid-column: 1 / -1;
+}
+
+.pet-switch-card,
+.dog-summary-card {
+  min-height: auto;
 }
 
 .dog-profile-card,
@@ -128,6 +146,80 @@
 .dog-food-card,
 .dog-exercise-card {
   min-height: 420px;
+}
+
+.pet-profile-tabs,
+.dog-summary-grid,
+.dog-history-list {
+  display: grid;
+  gap: 10px;
+}
+
+.pet-profile-tabs {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.pet-profile-tabs button,
+.dog-summary-grid article,
+.dog-history-list article,
+.dog-bath-row {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--color-heading);
+  text-align: left;
+}
+
+.pet-profile-tabs button {
+  cursor: pointer;
+}
+
+.pet-profile-tabs button[aria-pressed='true'] {
+  border-color: rgba(52, 211, 153, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.35), 0 18px 40px rgba(52, 211, 153, 0.08);
+}
+
+.pet-profile-tabs button span {
+  font-size: 1.45rem;
+}
+
+.pet-profile-tabs button small,
+.dog-summary-grid small,
+.dog-history-list small {
+  color: var(--color-muted);
+}
+
+.add-pet-card {
+  border-style: dashed !important;
+}
+
+.danger-soft {
+  color: #fecaca !important;
+  border-color: rgba(244, 63, 94, 0.28) !important;
+}
+
+.dog-summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dog-summary-grid article svg {
+  color: var(--color-gold);
+}
+
+.dog-summary-grid article span,
+.dog-history-list article span {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.dog-summary-grid article strong,
+.dog-history-list article strong {
+  color: var(--color-heading);
 }
 
 .dog-form-grid,
@@ -178,7 +270,8 @@
 
 .dog-task:hover,
 .dog-reminder:hover,
-.dog-vaccine:hover {
+.dog-vaccine:hover,
+.pet-profile-tabs button:hover {
   border-color: rgba(52, 211, 153, 0.34);
   transform: translateY(-1px);
 }
@@ -234,7 +327,7 @@
 
 .dog-walk-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   gap: 10px;
 }
 
@@ -254,6 +347,11 @@
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.045);
   transition: 0.18s ease;
+}
+
+.dog-reminder.done {
+  opacity: 0.75;
+  border-color: rgba(52, 211, 153, 0.32);
 }
 
 .dog-reminder h3,
@@ -304,6 +402,19 @@
   margin-bottom: 6px;
 }
 
+.dog-bath-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.dog-bath-row strong {
+  color: var(--color-heading);
+}
+
+.dog-bath-row span {
+  color: var(--color-muted);
+}
+
 .dog-notes-card textarea {
   min-height: 140px;
   padding: 12px;
@@ -329,16 +440,18 @@
 
 @media (max-width: 1100px) {
   .dog-care-layout,
+  .pet-profile-system,
   .dog-hero-card {
     grid-template-columns: 1fr;
   }
 
   .dog-photo-frame {
-    min-height: 320px;
+    min-height: 360px;
   }
 
   .dog-vaccine-form,
-  .dog-reminder-form {
+  .dog-reminder-form,
+  .dog-summary-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -359,7 +472,8 @@
   }
 
   .dog-photo-frame {
-    min-height: 280px;
+    min-height: 330px;
+    background-size: 82% auto, min(82%, 320px) auto, cover;
   }
 
   .dog-form-grid,
@@ -367,7 +481,9 @@
   .dog-reminder-form,
   .dog-reminder,
   .dog-vaccine,
-  .dog-walk-form {
+  .dog-walk-form,
+  .dog-summary-grid,
+  .dog-bath-row {
     grid-template-columns: 1fr;
   }
 
