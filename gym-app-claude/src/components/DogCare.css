@@ -55,6 +55,26 @@
     linear-gradient(90deg, transparent 58%, rgba(7, 10, 9, 0.58));
 }
 
+.dog-hero-hearts {
+  position: absolute;
+  right: 26px;
+  top: 24px;
+  z-index: 2;
+  color: #fecdd3;
+  font-weight: 950;
+  opacity: 0;
+  transform: translateY(10px);
+  text-shadow: 0 0 18px rgba(244, 114, 182, 0.9);
+}
+
+.dog-celebrating .dog-hero-hearts {
+  animation: dog-hearts-pop 1.1s ease-out;
+}
+
+.dog-celebrating .dog-photo-frame {
+  animation: dog-photo-hop 1.05s ease-out;
+}
+
 .dog-photo-fallback {
   display: none;
 }
@@ -128,11 +148,39 @@
   padding: 18px;
 }
 
+.dog-command-dashboard {
+  grid-column: 1 / -1;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(52, 211, 153, 0.16), transparent 34%),
+    linear-gradient(180deg, rgba(24, 31, 26, 0.98), rgba(13, 17, 15, 0.96));
+}
+
+.dog-daily-card,
+.dog-summary-card {
+  order: 2;
+}
+
+.pet-switch-card,
+.dog-exercise-card,
+.dog-food-card {
+  order: 3;
+}
+
+.dog-profile-card,
+.dog-weight-card,
+.dog-appointment-card,
+.dog-vaccine-card,
+.dog-reminder-card,
+.dog-notes-card {
+  order: 5;
+}
+
 .dog-reminder-card,
 .dog-notes-card,
 .dog-vaccine-card,
 .dog-appointment-card,
-.dog-weight-card {
+.dog-weight-card,
+.dog-profile-card {
   grid-column: 1 / -1;
 }
 
@@ -145,12 +193,13 @@
 .dog-daily-card,
 .dog-food-card,
 .dog-exercise-card {
-  min-height: 420px;
+  min-height: auto;
 }
 
 .pet-profile-tabs,
 .dog-summary-grid,
-.dog-history-list {
+.dog-history-list,
+.dog-chart-row {
   display: grid;
   gap: 10px;
 }
@@ -162,7 +211,8 @@
 .pet-profile-tabs button,
 .dog-summary-grid article,
 .dog-history-list article,
-.dog-bath-row {
+.dog-bath-row,
+.dog-chart-bar {
   display: grid;
   gap: 4px;
   padding: 14px;
@@ -192,8 +242,15 @@
   color: var(--color-muted);
 }
 
-.add-pet-card {
-  border-style: dashed !important;
+.add-pet-form,
+.dog-dashboard-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr) minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.dog-dashboard-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .danger-soft {
@@ -203,6 +260,46 @@
 
 .dog-summary-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dog-chart-row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dog-chart-bar {
+  position: relative;
+  min-height: 118px;
+  align-content: end;
+  overflow: hidden;
+}
+
+.dog-chart-bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--bar);
+  background: linear-gradient(180deg, rgba(52, 211, 153, 0.46), rgba(250, 204, 21, 0.18));
+  opacity: 0.82;
+}
+
+.dog-chart-bar span,
+.dog-chart-bar strong {
+  position: relative;
+  z-index: 1;
+}
+
+.dog-chart-bar span {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.dog-chart-bar strong {
+  color: var(--color-heading);
+  font-size: 1.6rem;
 }
 
 .dog-summary-grid article svg {
@@ -331,6 +428,10 @@
   gap: 10px;
 }
 
+.dog-exercise-card .dog-walk-form {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 .dog-vaccine-form,
 .dog-reminder-form {
   grid-template-columns: minmax(180px, 1fr) minmax(140px, 0.6fr) minmax(150px, 0.6fr) minmax(180px, 1fr) auto;
@@ -438,6 +539,18 @@
   font-weight: 850;
 }
 
+@keyframes dog-photo-hop {
+  0%, 100% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-10px) scale(1.015); }
+  58% { transform: translateY(0) scale(0.995); }
+}
+
+@keyframes dog-hearts-pop {
+  0% { opacity: 0; transform: translateY(12px) scale(0.8); }
+  30% { opacity: 1; transform: translateY(0) scale(1.08); }
+  100% { opacity: 0; transform: translateY(-28px) scale(1); }
+}
+
 @media (max-width: 1100px) {
   .dog-care-layout,
   .pet-profile-system,
@@ -451,7 +564,10 @@
 
   .dog-vaccine-form,
   .dog-reminder-form,
-  .dog-summary-grid {
+  .dog-summary-grid,
+  .dog-chart-row,
+  .add-pet-form,
+  .dog-dashboard-actions {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -483,7 +599,11 @@
   .dog-vaccine,
   .dog-walk-form,
   .dog-summary-grid,
-  .dog-bath-row {
+  .dog-bath-row,
+  .dog-chart-row,
+  .add-pet-form,
+  .dog-dashboard-actions,
+  .dog-exercise-card .dog-walk-form {
     grid-template-columns: 1fr;
   }
 
