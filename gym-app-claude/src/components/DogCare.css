@@ -1,59 +1,84 @@
 .dog-care-layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.8fr);
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.76fr);
   gap: 18px;
   align-items: start;
 }
 
 .dog-hero-card,
 .dog-card {
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  background: var(--color-panel);
+  border: 1px solid rgba(52, 211, 153, 0.18);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(24, 31, 26, 0.98), rgba(13, 17, 15, 0.96));
   box-shadow: var(--shadow-soft);
 }
 
 .dog-hero-card {
   grid-column: 1 / -1;
+  position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 18px;
-  align-items: center;
-  padding: 22px;
+  grid-template-columns: minmax(280px, 0.48fr) minmax(0, 1fr);
+  min-height: 350px;
+  gap: 0;
+  align-items: stretch;
+  padding: 0;
   overflow: hidden;
   background:
-    radial-gradient(circle at 12% 20%, rgba(52, 211, 153, 0.18), transparent 32%),
-    radial-gradient(circle at 84% 18%, rgba(250, 204, 21, 0.14), transparent 28%),
-    var(--color-panel);
+    radial-gradient(circle at 82% 24%, rgba(250, 204, 21, 0.2), transparent 34%),
+    radial-gradient(circle at 14% 18%, rgba(52, 211, 153, 0.2), transparent 36%),
+    linear-gradient(135deg, rgba(20, 83, 45, 0.28), rgba(39, 39, 42, 0.08));
 }
 
-.dog-avatar-bubble {
-  width: clamp(92px, 18vw, 160px);
-  height: clamp(92px, 18vw, 160px);
-  display: grid;
-  place-items: center;
-  border-radius: 34px;
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.18), rgba(250, 204, 21, 0.16));
-  border: 1px solid rgba(52, 211, 153, 0.26);
-  font-size: clamp(3.2rem, 8vw, 6rem);
+.dog-photo-frame {
+  position: relative;
+  min-height: 350px;
+  background-image:
+    linear-gradient(90deg, rgba(10, 12, 11, 0.12), rgba(10, 12, 11, 0.82)),
+    url('/assets/dog/silly-dog-photo.svg');
+  background-size: cover;
+  background-position: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dog-photo-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 45% 42%, transparent 28%, rgba(0, 0, 0, 0.28) 88%),
+    linear-gradient(180deg, transparent 48%, rgba(0, 0, 0, 0.46));
+}
+
+.dog-photo-fallback {
+  display: none;
 }
 
 .dog-hero-copy {
   display: grid;
-  gap: 10px;
+  align-content: center;
+  gap: 14px;
+  padding: clamp(22px, 5vw, 52px);
 }
 
 .dog-hero-copy h2 {
   margin: 0;
   color: var(--color-heading);
-  font-size: clamp(2.4rem, 7vw, 5rem);
-  line-height: 0.95;
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.07em;
 }
 
 .dog-hero-copy p {
-  max-width: 70ch;
+  max-width: 72ch;
   margin: 0;
   color: var(--color-muted);
+  font-size: 1rem;
+}
+
+.dog-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .dog-progress-ring {
@@ -66,8 +91,13 @@
   padding: 0 14px;
   border-radius: 999px;
   color: var(--color-heading);
-  background: linear-gradient(90deg, rgba(52, 211, 153, 0.16) var(--dog-progress), rgba(255,255,255,0.06) var(--dog-progress));
-  border: 1px solid rgba(52, 211, 153, 0.28);
+  background: linear-gradient(90deg, rgba(52, 211, 153, 0.2) var(--dog-progress), rgba(255,255,255,0.07) var(--dog-progress));
+  border: 1px solid rgba(52, 211, 153, 0.34);
+}
+
+.dog-progress-ring.walk-ring {
+  border-color: rgba(250, 204, 21, 0.34);
+  background: linear-gradient(90deg, rgba(250, 204, 21, 0.18) var(--dog-progress), rgba(255,255,255,0.07) var(--dog-progress));
 }
 
 .dog-progress-ring strong {
@@ -87,17 +117,21 @@
   padding: 18px;
 }
 
-.dog-profile-card,
-.dog-daily-card {
-  min-height: 420px;
-}
-
 .dog-reminder-card,
-.dog-notes-card {
+.dog-notes-card,
+.dog-vaccine-card {
   grid-column: 1 / -1;
 }
 
+.dog-profile-card,
+.dog-daily-card,
+.dog-food-card,
+.dog-exercise-card {
+  min-height: 420px;
+}
+
 .dog-form-grid,
+.dog-vaccine-form,
 .dog-reminder-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -105,20 +139,22 @@
 }
 
 .dog-form-grid label,
-.dog-reminder-form label {
+.dog-single-field {
   display: grid;
   gap: 5px;
 }
 
-.dog-form-grid span {
+.dog-form-grid span,
+.dog-single-field span {
   color: var(--color-muted);
-  font-size: 0.78rem;
-  font-weight: 850;
+  font-size: 0.76rem;
+  font-weight: 900;
   text-transform: uppercase;
 }
 
 .dog-task-list,
-.dog-reminder-list {
+.dog-reminder-list,
+.dog-vaccine-list {
   display: grid;
   gap: 10px;
 }
@@ -132,12 +168,19 @@
   min-height: 68px;
   padding: 12px;
   border: 1px solid var(--color-border);
-  border-radius: 14px;
+  border-radius: 16px;
   color: var(--color-heading);
-  background: var(--color-surface);
+  background: rgba(255, 255, 255, 0.045);
   text-align: left;
   font: inherit;
   cursor: pointer;
+}
+
+.dog-task:hover,
+.dog-reminder:hover,
+.dog-vaccine:hover {
+  border-color: rgba(52, 211, 153, 0.34);
+  transform: translateY(-1px);
 }
 
 .dog-task svg:first-child {
@@ -154,27 +197,63 @@
 }
 
 .dog-task.done {
-  border-color: rgba(52, 211, 153, 0.52);
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.16), var(--color-surface));
+  border-color: rgba(52, 211, 153, 0.62);
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.18), rgba(255, 255, 255, 0.04));
 }
 
 .dog-task.done svg:last-child {
   color: var(--color-green);
 }
 
-.dog-reminder-form {
-  grid-template-columns: minmax(180px, 1fr) minmax(140px, 0.5fr) minmax(150px, 0.6fr) minmax(180px, 1fr) auto;
+.dog-exercise-dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.dog-reminder {
+.dog-exercise-dashboard div {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid rgba(250, 204, 21, 0.18);
+  border-radius: 16px;
+  background: rgba(250, 204, 21, 0.07);
+}
+
+.dog-exercise-dashboard strong {
+  color: var(--color-gold);
+  font-size: 1.8rem;
+}
+
+.dog-exercise-dashboard span {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.dog-walk-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.dog-vaccine-form,
+.dog-reminder-form {
+  grid-template-columns: minmax(180px, 1fr) minmax(140px, 0.6fr) minmax(150px, 0.6fr) minmax(180px, 1fr) auto;
+}
+
+.dog-reminder,
+.dog-vaccine {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
   padding: 14px;
   border: 1px solid var(--color-border);
-  border-radius: 14px;
-  background: var(--color-surface);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.045);
+  transition: 0.18s ease;
 }
 
 .dog-reminder h3,
@@ -186,7 +265,8 @@
   color: var(--color-heading);
 }
 
-.dog-reminder p {
+.dog-reminder p,
+.dog-vaccine small {
   color: var(--color-muted);
 }
 
@@ -202,21 +282,26 @@
   font-weight: 900;
 }
 
-.dog-reminder.due-overdue span {
+.dog-reminder.due-overdue span,
+.dog-vaccine.due-overdue small {
   color: #fecaca;
-  background: rgba(239, 68, 68, 0.16);
 }
 
 .dog-reminder.due-today span,
-.dog-reminder.due-soon span {
+.dog-reminder.due-soon span,
+.dog-vaccine.due-today small,
+.dog-vaccine.due-soon small {
   color: #fef3c7;
-  background: rgba(250, 204, 21, 0.14);
 }
 
 .dog-reminder-actions {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+}
+
+.dog-vaccine input {
+  margin-bottom: 6px;
 }
 
 .dog-notes-card textarea {
@@ -248,10 +333,11 @@
     grid-template-columns: 1fr;
   }
 
-  .dog-avatar-bubble {
-    justify-self: start;
+  .dog-photo-frame {
+    min-height: 320px;
   }
 
+  .dog-vaccine-form,
   .dog-reminder-form {
     grid-template-columns: 1fr 1fr;
   }
@@ -264,13 +350,28 @@
 
   .dog-hero-card,
   .dog-card {
-    padding: 14px;
     border-radius: 18px;
   }
 
+  .dog-hero-copy,
+  .dog-card {
+    padding: 14px;
+  }
+
+  .dog-photo-frame {
+    min-height: 280px;
+  }
+
   .dog-form-grid,
+  .dog-vaccine-form,
   .dog-reminder-form,
-  .dog-reminder {
+  .dog-reminder,
+  .dog-vaccine,
+  .dog-walk-form {
+    grid-template-columns: 1fr;
+  }
+
+  .dog-exercise-dashboard {
     grid-template-columns: 1fr;
   }
 
