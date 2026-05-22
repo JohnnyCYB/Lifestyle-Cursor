@@ -96,6 +96,26 @@ function PetEmotes({ mood, facing }) {
   return null
 }
 
+function RealDogCompanion({ mood, facing, isMoving }) {
+  const dogFacing = facing === 'left' ? 'right' : 'left'
+  return (
+    <div
+      className={[
+        'real-dog-companion',
+        `dog-facing-${dogFacing}`,
+        isMoving ? 'dog-following' : 'dog-idle',
+        ['happy', 'celebrate', 'victory'].includes(mood) ? 'dog-happy' : '',
+      ].filter(Boolean).join(' ')}
+      aria-hidden="true"
+    >
+      <span className="real-dog-ground" />
+      <img className="real-dog-sprite" src="/assets/dog/real-dog-stand.webp" alt="" draggable="false" />
+      <span className="real-dog-tail-wag" />
+      {['happy', 'celebrate', 'victory'].includes(mood) && <span className="real-dog-heart">♥</span>}
+    </div>
+  )
+}
+
 export default function GlobalPet({
   companion,
   stageIndex,
@@ -193,6 +213,7 @@ export default function GlobalPet({
       aria-label={`${companion.name}, your roaming ${companion.species}`}
     >
       <PetEmotes mood={mood} facing={facing} />
+      <RealDogCompanion mood={mood} facing={facing} isMoving={isMoving} />
       <motion.div
         className="global-pet-sprite"
         animate={isMoving ? { y: hopY } : { y: 0 }}
