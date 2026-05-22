@@ -181,6 +181,32 @@
   white-space: nowrap;
 }
 
+.account-open-button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  color: var(--color-heading);
+  background: var(--color-panel);
+  cursor: pointer;
+}
+
+.account-open-button span {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-open-button small {
+  color: var(--color-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
 .icon-toggle {
   width: 40px;
   height: 40px;
@@ -734,6 +760,7 @@ button:focus-visible { outline: 2px solid var(--color-green); outline-offset: 2p
 @media (max-width: 760px) {
   .app-main { padding: 16px; }
   .topbar { align-items: flex-start; flex-direction: column; }
+  .account-open-button { width: 100%; justify-content: flex-start; }
   .topbar h1 { font-size: 2.7rem; }
   .hero-copy h2 { font-size: 2.8rem; }
   .quick-grid,

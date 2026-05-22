@@ -7,6 +7,9 @@ import PetArt from './components/PetArt'
 import PetsView from './components/PetsView'
 import NutritionScanner from './components/NutritionScanner'
 import DogCare from './components/DogCare'
+import ProfileModal from './components/ProfileModal'
+import { getCurrentUser, isAuthEnabled, signInWithEmail, signOut as authSignOut, signUpWithEmail } from './services/authService'
+import { loadCloudProfile } from './services/cloudProfileService'
 import './components/NutritionScanner.css'
 import './components/CalendarRewards.css'
 import './App.css'
@@ -50,7 +53,10 @@ function App() {
   const [snackReady, setSnackReady] = useState(false)
   const [snackFed, setSnackFed] = useState(false)
   const [lastFoodEntry, setLastFoodEntry] = useState(null)
+  const [profileModalOpen, setProfileModalOpen] = useState(false)
+  const [authUser, setAuthUser] = useState(null)
   const todayKey = useMemo(() => localDateKey(), [])
+  const authEnabled = isAuthEnabled()
   const prefersReducedMotion = useReducedMotion()
   const companion = companions.find((candidate) => candidate.id === profile.petType) ?? companions[0]
   const activePetPoints = profile.demoMode ? Math.max(profile.points, 6500) : (profile.petXp?.[companion.id] ?? profile.points)
@@ -74,6 +80,19 @@ function App() {
     if (stageIndex > lastStageRef.current) setPetReaction(stageIndex === 3 ? 'victory' : 'celebrate')
     lastStageRef.current = stageIndex
   }, [profile.settings.animations, stageIndex])
+  useEffect(() => {
+    let active = true
+    async function loadUser() {
+      if (!authEnabled) {
+        if (active) setAuthUser(null)
+        return
+      }
+      const user = await getCurrentUser()
+      if (active) setAuthUser(user)
+    }
+    void loadUser()
+    return () => { active = false }
+  }, [authEnabled])
 
   function switchAccountMode(nextMode) { window.localStorage.setItem(accountModeKey, nextMode); setAccountModeState(nextMode); setSnackReady(false); setSnackFed(false); setLastFoodEntry(null); setActiveView('dashboard'); setPetReaction('idle') }
   function triggerPetReaction(reaction) { if (profile.settings.animations) setPetReaction(reaction ?? 'happy') }
@@ -94,13 +113,53 @@ function App() {
   function feedPetSnack(rewardId = null) { if (rewardId) { const reward = unlockRewards.find((item) => item.id === rewardId); if (!reward) return; setProfile((current) => ({ ...current, rewardInventory: current.rewardInventory.filter((id) => id !== rewardId), activeXpMultiplier: reward.multiplier, activeXpMultiplierLabel: reward.title, care: applyCare(current.care, { satiety: 10, bond: 6, spark: 8 }), ledger: [makeLedgerEntry(`Fed ${reward.title}. Next XP is ${reward.multiplier}x`, 0, 'nutrition'), ...current.ledger].slice(0, 10) })); setSnackFed(true); triggerPetReaction('victory'); return } if (!snackReady || snackFed) return; setSnackFed(true); setProfile((current) => ({ ...current, care: applyCare(current.care, { satiety: 6, bond: 3, spark: 2 }), ledger: [makeLedgerEntry('Fed companion a game fruit', 0, 'nutrition'), ...current.ledger].slice(0, 10) })); triggerPetReaction('happy') }
   function handleDogCareChange(dogCare) { setProfile((current) => ({ ...current, dogCare, ledger: [makeLedgerEntry(`Updated ${dogCare.name || 'dog'} care`, 0, 'life'), ...current.ledger].slice(0, 10) })) }
   function resetProfile() { setProfile(accountMode === 'demo' ? buildDemoProfile() : buildRealProfile()); setSnackReady(false); setSnackFed(false); setLastFoodEntry(null); setActiveView('dashboard'); setPetReaction('idle') }
+  async function handleSignUp({ email, password, displayName }) {
+    const result = await signUpWithEmail(email, password, displayName)
+    if (result.user) {
+      setAuthUser(result.user)
+      switchAccountMode('real')
+      if (displayName) setProfile((current) => ({ ...current, userName: displayName }))
+      // TODO: Cloud hydration hook will merge remote payload once conflict policy is finalized.
+      await loadCloudProfile(result.user.id)
+    }
+    return result
+  }
+  async function handleSignIn({ email, password }) {
+    const result = await signInWithEmail(email, password)
+    if (result.user) {
+      setAuthUser(result.user)
+      switchAccountMode('real')
+      // TODO: Cloud hydration hook will merge remote payload once conflict policy is finalized.
+      await loadCloudProfile(result.user.id)
+    }
+    return result
+  }
+  async function handleSignOut() {
+    const result = await authSignOut()
+    if (!result.error) {
+      setAuthUser(null)
+      switchAccountMode('real')
+    }
+    return result
+  }
+  function openProfileModal() { setProfileModalOpen(true) }
+  function closeProfileModal() { setProfileModalOpen(false) }
+  async function continueLocalOnly() {
+    if (authUser) await handleSignOut()
+    else switchAccountMode('real')
+    setProfileModalOpen(false)
+  }
+  function switchToDemoFromModal() { switchAccountMode('demo'); setProfileModalOpen(false) }
+  const accountDisplayName = profile.demoMode ? 'Demo Player' : (authUser?.user_metadata?.display_name || authUser?.email || profile.userName || 'Player')
+  const accountKindLabel = profile.demoMode ? 'Demo Account' : (authUser ? 'Cloud Account' : 'Local Account')
 
   const sharedProps = { profile, companion, stageIndex, stageName, evolution, completedToday, unlockedAchievements, weeklyTotal, workoutForm, setWorkoutForm, goalForm, setGoalForm, winFilter, setWinFilter, nutritionFocus, setNutritionFocus, snackReady, snackFed, lastFoodEntry, todayKey, onActivity: addActivity, onCompleteQuest: completeQuest, onSelectPet: selectPet, onToggleSetting: toggleSetting, onTogglePetRoam: togglePetRoam, onResetProfile: resetProfile, onRecommendedWorkout: logGymTemplate, onSaveGymTemplate: saveGymTemplate, onSaveCustomWorkout: saveCustomWorkout, onLogCustomWorkout: (workout) => addActivity({ label: workout.name, points: workout.points, area: 'gym', reaction: 'power', care: { energy: -6, satiety: -3, bond: 5, spark: 6 } }), onAddLifeGoal: addLifeGoal, onCompleteGoal: completeGoal, onDeleteGoal: deleteGoal, onRefillGoals: refillGoalsNow, setActiveView, onFoodLog: handleFoodLog, onFeedSnack: feedPetSnack, onDogCareChange: handleDogCareChange }
 
   return <div className={['app-shell', 'mobile-polish', profile.settings.animations ? 'motion-ok' : 'motion-off', profile.settings.focusMode ? 'focus-mode' : '', profile.demoMode ? 'demo-mode' : 'real-mode'].filter(Boolean).join(' ')}>
     <GlobalPet companion={companion} stageIndex={stageIndex} position={profile.petPosition} motionMode={profile.petMotionMode} petCanMove={petCanMove} reaction={petReaction} onMovePet={movePetTo} />
     <aside className="app-rail" aria-label="Primary navigation"><button className="brand-lockup" type="button" onClick={() => setActiveView('dashboard')}><span className="brand-mark"><PawPrint size={20} /></span><span><strong>Life RPG</strong><small>{profile.demoMode ? 'Demo Account' : 'My Account'}</small></span></button><nav className="nav-list">{navItems.map((item) => { const Icon = item.icon; return <button key={item.id} className="nav-button" type="button" aria-current={activeView === item.id ? 'page' : undefined} onClick={() => setActiveView(item.id)}><Icon size={18} /><span>{item.label}</span></button> })}</nav></aside>
-    <main className="app-main"><header className="topbar" data-no-pet-move="true"><div><span className="eyebrow">Welcome back, {profile.userName}</span><h1>{activeTitle(activeView)}</h1></div><div className="topbar-actions"><AccountSwitcher mode={accountMode} onSwitch={switchAccountMode} /><MetricPill icon={Flame} label={`${profile.streak} day streak`} /><MetricPill icon={Sparkles} label={`${profile.points} pts`} /><button className="icon-toggle" type="button" aria-pressed={profile.settings.animations} onClick={() => toggleSetting('animations')}><Settings2 size={18} /></button></div></header>{renderActiveView(activeView, sharedProps)}</main>
+    <main className="app-main"><header className="topbar" data-no-pet-move="true"><div><span className="eyebrow">Welcome back, {accountDisplayName}</span><h1>{activeTitle(activeView)}</h1></div><div className="topbar-actions"><button className="account-open-button" type="button" data-no-pet-move="true" onClick={openProfileModal}><User size={16} /><span>{accountDisplayName}</span><small>{accountKindLabel}</small></button><AccountSwitcher mode={accountMode} onSwitch={switchAccountMode} /><MetricPill icon={Flame} label={`${profile.streak} day streak`} /><MetricPill icon={Sparkles} label={`${profile.points} pts`} /><button className="icon-toggle" type="button" aria-pressed={profile.settings.animations} onClick={() => toggleSetting('animations')}><Settings2 size={18} /></button></div></header>{renderActiveView(activeView, sharedProps)}</main>
+    {profileModalOpen && <ProfileModal onClose={closeProfileModal} accountMode={accountMode} authEnabled={authEnabled} authUser={authUser} localDisplayName={profile.userName} onSignIn={handleSignIn} onSignUp={handleSignUp} onSignOut={handleSignOut} onContinueLocal={continueLocalOnly} onSwitchToDemo={switchToDemoFromModal} />}
   </div>
 }
 
