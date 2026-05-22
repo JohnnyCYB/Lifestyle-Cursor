@@ -572,6 +572,147 @@ button:focus-visible { outline: 2px solid var(--color-green); outline-offset: 2p
 @keyframes barRise { from { transform: scaleY(0.1); transform-origin: bottom; } to { transform: scaleY(1); transform-origin: bottom; } }
 @keyframes fruit-bob { from { transform: translateY(0) rotate(-5deg); } to { transform: translateY(-10px) rotate(6deg); } }
 
+.app-main:has(.dog-care-layout) .topbar h1 {
+  font-size: 0;
+}
+
+.app-main:has(.dog-care-layout) .topbar h1::after {
+  content: 'Doggy Care';
+  display: block;
+  font-size: clamp(3rem, 6vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+}
+
+.nav-list .nav-button:nth-child(4) span {
+  font-size: 0;
+}
+
+.nav-list .nav-button:nth-child(4) span::after {
+  content: 'Doggy Care';
+  font-size: 1rem;
+}
+
+.app-main:has(.dog-care-layout) {
+  width: min(1320px, 100%);
+}
+
+.dog-photo-frame {
+  min-height: 390px;
+  display: grid;
+  place-items: end center;
+  background-image:
+    radial-gradient(ellipse at 50% 96%, rgba(0, 0, 0, 0.66), transparent 30%),
+    radial-gradient(ellipse at 50% 87%, rgba(17, 30, 24, 0.96), rgba(17, 30, 24, 0.55) 38%, transparent 62%),
+    url('/assets/dog/real-dog-sit.webp'),
+    linear-gradient(135deg, rgba(52, 211, 153, 0.26), rgba(250, 204, 21, 0.1)) !important;
+  background-size: 60% 20%, 66% 34%, min(74%, 320px) auto, cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center bottom 12px, center bottom 0, center bottom 18px, center !important;
+}
+
+.dog-photo-frame::before {
+  content: '';
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 14px;
+  z-index: 2;
+  height: 30px;
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0));
+  filter: blur(1px);
+}
+
+.dog-photo-frame::after {
+  background: linear-gradient(90deg, transparent 62%, rgba(6, 9, 8, 0.42)), linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 30%);
+}
+
+.dog-celebrating .dog-photo-frame {
+  animation: dog-photo-hop 1.05s ease-out;
+}
+
+.dog-celebrating .dog-photo-frame::before {
+  animation: dog-shadow-squish 1.05s ease-out;
+}
+
+.real-dog-companion {
+  width: clamp(54px, calc(var(--pet-size) * 0.26), 96px) !important;
+  height: clamp(66px, calc(var(--pet-size) * 0.36), 132px) !important;
+  left: -18% !important;
+  bottom: -12% !important;
+  filter: drop-shadow(0 20px 20px rgba(0, 0, 0, 0.6)) !important;
+}
+
+.dog-facing-right.real-dog-companion,
+.dog-facing-right {
+  right: -18% !important;
+  left: auto !important;
+}
+
+.real-dog-ground {
+  width: 88% !important;
+  height: 16% !important;
+  bottom: 1% !important;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.18) 48%, transparent 74%) !important;
+}
+
+.real-dog-sprite {
+  animation: real-dog-breathe-wobble 2.55s ease-in-out infinite !important;
+  filter: saturate(1.02) contrast(1.02);
+}
+
+.real-dog-tail-wag {
+  height: 10% !important;
+  width: 32% !important;
+  opacity: 0.9;
+  animation: real-dog-tail-clean 0.34s ease-in-out infinite alternate !important;
+}
+
+.dog-following .real-dog-sprite {
+  animation: real-dog-clean-hop 0.46s ease-in-out infinite !important;
+}
+
+.dog-following .real-dog-ground,
+.dog-happy .real-dog-ground {
+  animation: real-dog-shadow-squish-clean 0.46s ease-in-out infinite !important;
+}
+
+.dog-happy .real-dog-sprite {
+  animation: real-dog-happy-clean 0.66s ease-in-out infinite alternate !important;
+}
+
+.real-dog-heart {
+  left: 54% !important;
+  top: -2% !important;
+  font-size: 1.15rem !important;
+}
+
+@keyframes real-dog-breathe-wobble {
+  0%, 100% { transform: translateX(-50%) translateY(0) rotate(-1deg) scale(1); }
+  50% { transform: translateX(-50%) translateY(-3px) rotate(1deg) scale(1.025, 0.99); }
+}
+
+@keyframes real-dog-clean-hop {
+  0%, 100% { transform: translateX(-50%) translateY(0) rotate(-3deg) scale(1); }
+  50% { transform: translateX(-50%) translateY(-8px) rotate(3deg) scale(1.035, 0.98); }
+}
+
+@keyframes real-dog-happy-clean {
+  0% { transform: translateX(-50%) translateY(0) rotate(-4deg) scale(1); }
+  100% { transform: translateX(-50%) translateY(-12px) rotate(4deg) scale(1.045); }
+}
+
+@keyframes real-dog-shadow-squish-clean {
+  0%, 100% { opacity: 0.68; transform: translateX(-50%) scaleX(1); }
+  50% { opacity: 0.34; transform: translateX(-50%) scaleX(0.62); }
+}
+
+@keyframes real-dog-tail-clean {
+  0% { transform: rotate(-17deg) scaleX(0.95); }
+  100% { transform: rotate(24deg) scaleX(1.05); }
+}
+
 @media (max-width: 1100px) {
   .app-shell { grid-template-columns: 1fr; }
   .app-rail { position: static; height: auto; flex-direction: row; align-items: center; overflow-x: auto; }
@@ -587,6 +728,7 @@ button:focus-visible { outline: 2px solid var(--color-green); outline-offset: 2p
   .content-grid { grid-template-columns: 1fr; }
   .care-actions { grid-column: auto; }
   .recommendation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dog-photo-frame { background-size: 56% 18%, 64% 32%, min(64%, 340px) auto, cover !important; }
 }
 
 @media (max-width: 760px) {
@@ -605,4 +747,8 @@ button:focus-visible { outline: 2px solid var(--color-green); outline-offset: 2p
   .mini-row,
   .goal-row { grid-template-columns: 1fr; }
   .input-row { grid-template-columns: 1fr; }
+  .app-main:has(.dog-care-layout) .topbar h1::after { font-size: clamp(2.6rem, 12vw, 4rem); }
+  .dog-photo-frame { min-height: 350px; background-size: 60% 18%, 68% 32%, min(76%, 300px) auto, cover !important; }
+  .real-dog-companion { width: 54px !important; height: 70px !important; left: -6% !important; bottom: -10% !important; }
+  .dog-facing-right.real-dog-companion, .dog-facing-right { right: -6% !important; left: auto !important; }
 }
