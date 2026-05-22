@@ -329,6 +329,10 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.dog-summary-card .cs-card {
+  margin-top: 12px;
+}
+
 .dog-chart-row {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -564,6 +568,8 @@
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .dog-vaccine input {
@@ -703,6 +709,10 @@
 
   .dog-reminder-actions {
     justify-content: stretch;
+  }
+
+  .dog-reminder-actions .cs-btn {
+    flex: 1;
   }
 
   .dog-reminder-actions .secondary-button {

@@ -13,6 +13,7 @@ import {
   Utensils,
   Weight,
 } from 'lucide-react'
+import { CalendarSyncCard, AddToCalendarButton } from './CalendarSync'
 import './DogCare.css'
 
 const dogDailyTasks = [
@@ -135,6 +136,15 @@ function emptyAppointment() {
 
 function todayKeyString() {
   return new Date().toISOString().slice(0, 10)
+}
+
+function getReminderCalendarType(reminder) {
+  const value = `${reminder?.title || ''} ${reminder?.type || ''}`.toLowerCase()
+  if (value.includes('wash') || value.includes('bath')) return 'bath'
+  if (value.includes('flea') || value.includes('tick') || value.includes('medicine') || value.includes('med')) return 'flea'
+  if (value.includes('nail')) return 'nail'
+  if (value.includes('groom')) return 'groom'
+  return 'groom'
 }
 
 export default function DogCare({ profile, todayKey, onDogCareChange }) {
@@ -353,6 +363,16 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
           <article><PawPrint size={20} /><span>Last bath</span><strong>{latestBath?.date ?? 'Not logged'}</strong><small>Bath / grooming history</small></article>
           <article><Weight size={20} /><span>Size / weight</span><strong>{pet.size || latestWeight}</strong><small>{pet.weightHistory?.length ? `${pet.weightHistory.length} weigh-ins` : 'Start tracking'}</small></article>
         </div>
+        <CalendarSyncCard
+          dogCarePayload={{
+            ...pet,
+            pets: [pet],
+            appointments: pet.appointments,
+            reminders: pet.reminders,
+            vaccines: pet.vaccines,
+          }}
+          isDemo={profile.demoMode}
+        />
       </section>
 
       <section className="dog-card pet-switch-card">
@@ -424,20 +444,20 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
       <section className="dog-card dog-appointment-card">
         <div className="section-heading"><span className="eyebrow">Appointments</span><h2>Upcoming & history</h2></div>
         <form className="dog-vaccine-form" onSubmit={saveAppointment}><input value={newAppointment.title} onChange={(event) => setNewAppointment((current) => ({ ...current, title: event.target.value }))} placeholder="Vet visit, groomer, training" /><input type="date" value={newAppointment.date} onChange={(event) => setNewAppointment((current) => ({ ...current, date: event.target.value }))} /><input value={newAppointment.type} onChange={(event) => setNewAppointment((current) => ({ ...current, type: event.target.value }))} placeholder="Type" /><input value={newAppointment.provider} onChange={(event) => setNewAppointment((current) => ({ ...current, provider: event.target.value }))} placeholder="Provider" /><button className="primary-button" type="submit"><CalendarDays size={17} />Add</button></form>
-        <div className="dog-reminder-list">{upcomingAppointments.length ? upcomingAppointments.map((appt) => <article className={appt.completed ? 'dog-reminder done' : 'dog-reminder'} key={appt.id}><CalendarDays size={20} /><div><h3>{appt.title}</h3><p>{appt.provider || appt.type} · {appt.date || 'date not set'}</p><span>{appt.completed ? 'Completed' : getDueStatus(appt.date).label}</span></div><div className="dog-reminder-actions"><button className="secondary-button" type="button" onClick={() => toggleAppointment(appt.id)}><CheckCircle2 size={16} />{appt.completed ? 'Undo' : 'Done'}</button><button className="icon-toggle danger" type="button" onClick={() => deleteAppointment(appt.id)}><Trash2 size={16} /></button></div></article>) : <p className="helper-copy">No appointments logged yet.</p>}</div>
+        <div className="dog-reminder-list">{upcomingAppointments.length ? upcomingAppointments.map((appt) => <article className={appt.completed ? 'dog-reminder done' : 'dog-reminder'} key={appt.id}><CalendarDays size={20} /><div><h3>{appt.title}</h3><p>{appt.provider || appt.type} · {appt.date || 'date not set'}</p><span>{appt.completed ? 'Completed' : getDueStatus(appt.date).label}</span></div><div className="dog-reminder-actions"><AddToCalendarButton eventId={appt.id} type="vet" petName={pet.name} date={appt.date} notes={`${appt.title} ${appt.provider || ''} ${appt.notes || ''}`} isDemo={profile.demoMode} /><button className="secondary-button" type="button" onClick={() => toggleAppointment(appt.id)}><CheckCircle2 size={16} />{appt.completed ? 'Undo' : 'Done'}</button><button className="icon-toggle danger" type="button" onClick={() => deleteAppointment(appt.id)}><Trash2 size={16} /></button></div></article>) : <p className="helper-copy">No appointments logged yet.</p>}</div>
       </section>
 
       <section className="dog-card dog-vaccine-card">
         <div className="section-heading"><span className="eyebrow">Shot record</span><h2>Vaccines & medical</h2></div>
         <form className="dog-vaccine-form" onSubmit={saveVaccine}><input value={newVaccine.name} onChange={(event) => setNewVaccine((current) => ({ ...current, name: event.target.value }))} placeholder="Vaccine / medicine" /><input type="date" value={newVaccine.dateGiven} onChange={(event) => setNewVaccine((current) => ({ ...current, dateGiven: event.target.value }))} /><input type="date" value={newVaccine.nextDue} onChange={(event) => setNewVaccine((current) => ({ ...current, nextDue: event.target.value }))} /><input value={newVaccine.vet} onChange={(event) => setNewVaccine((current) => ({ ...current, vet: event.target.value }))} placeholder="Vet / clinic" /><button className="primary-button" type="submit"><Syringe size={17} />Add</button></form>
-        <div className="dog-vaccine-list">{upcomingVaccines.map((vaccine) => { const status = getDueStatus(vaccine.nextDue); return <article className={`dog-vaccine due-${status.tone}`} key={vaccine.id}><ShieldCheck size={20} /><div><input value={vaccine.name} onChange={(event) => updateVaccine(vaccine.id, { name: event.target.value })} placeholder="Vaccine" /><small>Given: {vaccine.dateGiven || 'not logged'} · {status.label}</small><input value={vaccine.notes} onChange={(event) => updateVaccine(vaccine.id, { notes: event.target.value })} placeholder="Notes" /></div><button className="icon-toggle danger" type="button" onClick={() => deleteVaccine(vaccine.id)}><Trash2 size={16} /></button></article> })}</div>
+        <div className="dog-vaccine-list">{upcomingVaccines.map((vaccine) => { const status = getDueStatus(vaccine.nextDue); return <article className={`dog-vaccine due-${status.tone}`} key={vaccine.id}><ShieldCheck size={20} /><div><input value={vaccine.name} onChange={(event) => updateVaccine(vaccine.id, { name: event.target.value })} placeholder="Vaccine" /><small>Given: {vaccine.dateGiven || 'not logged'} · {status.label}</small><input value={vaccine.notes} onChange={(event) => updateVaccine(vaccine.id, { notes: event.target.value })} placeholder="Notes" /></div><div className="dog-reminder-actions"><AddToCalendarButton eventId={vaccine.id} type="vaccine" petName={pet.name} vaccineName={vaccine.name} date={vaccine.nextDue || vaccine.dateGiven} notes={vaccine.notes} isDemo={profile.demoMode} /><button className="icon-toggle danger" type="button" onClick={() => deleteVaccine(vaccine.id)}><Trash2 size={16} /></button></div></article> })}</div>
       </section>
 
       <section className="dog-card dog-reminder-card">
         <div className="section-heading"><span className="eyebrow">Repeating care</span><h2>Baths, meds, nails</h2></div>
         <div className="dog-bath-row"><div><strong>Last bath</strong><span>{latestBath?.date ?? 'Not logged'}</span></div><button className="primary-button" type="button" onClick={logBath}><Plus size={17} />Log bath today</button></div>
         <form className="dog-reminder-form" onSubmit={addReminder}><input value={newReminder.title} onChange={(event) => setNewReminder((current) => ({ ...current, title: event.target.value }))} placeholder="Example: Dog wash" /><select value={newReminder.cadence} onChange={(event) => setNewReminder((current) => ({ ...current, cadence: event.target.value }))}>{cadenceOptions.map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select><input type="date" value={newReminder.nextDue} onChange={(event) => setNewReminder((current) => ({ ...current, nextDue: event.target.value }))} /><input value={newReminder.note} onChange={(event) => setNewReminder((current) => ({ ...current, note: event.target.value }))} placeholder="Optional note" /><button className="primary-button" type="submit"><Plus size={17} />Add</button></form>
-        <div className="dog-reminder-list">{dueReminders.map((reminder) => { const status = getDueStatus(reminder.nextDue); return <article className={`dog-reminder due-${status.tone}`} key={reminder.id}><CalendarDays size={20} /><div><h3>{reminder.title}</h3><p>{reminder.note || cadenceOptions.find(([value]) => value === reminder.cadence)?.[1]}</p><span>{status.label}</span></div><div className="dog-reminder-actions"><button className="secondary-button" type="button" onClick={() => completeReminder(reminder)}><RefreshCcw size={16} />Done</button><button className="icon-toggle danger" type="button" onClick={() => deleteReminder(reminder.id)}><Trash2 size={16} /></button></div></article> })}</div>
+        <div className="dog-reminder-list">{dueReminders.map((reminder) => { const status = getDueStatus(reminder.nextDue); return <article className={`dog-reminder due-${status.tone}`} key={reminder.id}><CalendarDays size={20} /><div><h3>{reminder.title}</h3><p>{reminder.note || cadenceOptions.find(([value]) => value === reminder.cadence)?.[1]}</p><span>{status.label}</span></div><div className="dog-reminder-actions"><AddToCalendarButton eventId={reminder.id} type={getReminderCalendarType(reminder)} petName={pet.name} date={reminder.nextDue} recurrence={reminder.cadence === 'weekly' ? 'weekly' : reminder.cadence === 'yearly' ? 'yearly' : 'monthly'} notes={reminder.note} isDemo={profile.demoMode} /><button className="secondary-button" type="button" onClick={() => completeReminder(reminder)}><RefreshCcw size={16} />Done</button><button className="icon-toggle danger" type="button" onClick={() => deleteReminder(reminder.id)}><Trash2 size={16} /></button></div></article> })}</div>
       </section>
 
       <section className="dog-card dog-notes-card">
@@ -448,3 +468,4 @@ export default function DogCare({ profile, todayKey, onDogCareChange }) {
     </div>
   )
 }
+
