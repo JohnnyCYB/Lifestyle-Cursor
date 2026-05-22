@@ -21,58 +21,35 @@
   grid-column: 1 / -1;
   position: relative;
   display: grid;
-  grid-template-columns: minmax(300px, 0.42fr) minmax(0, 1fr);
-  min-height: 390px;
+  grid-template-columns: minmax(300px, 0.36fr) minmax(0, 1fr);
+  min-height: 380px;
   gap: 0;
   align-items: stretch;
   padding: 0;
-  overflow: visible;
+  overflow: hidden;
   background:
     radial-gradient(circle at 82% 24%, rgba(250, 204, 21, 0.2), transparent 34%),
     radial-gradient(circle at 14% 18%, rgba(52, 211, 153, 0.2), transparent 36%),
     linear-gradient(135deg, rgba(20, 83, 45, 0.28), rgba(39, 39, 42, 0.08));
 }
 
-.dog-hero-card::before {
-  content: '';
-  position: absolute;
-  right: clamp(18px, 4vw, 52px);
-  bottom: -18px;
-  z-index: 5;
-  width: clamp(94px, 11vw, 154px);
-  height: clamp(104px, 12vw, 170px);
-  background: url('/assets/dog/real-dog-stand.webp') center bottom / contain no-repeat;
-  filter: drop-shadow(0 20px 18px rgba(0, 0, 0, 0.44));
-  transform-origin: 50% 100%;
-  animation: mini-dog-breathe 3.2s ease-in-out infinite;
-  pointer-events: none;
-}
-
+.dog-hero-card::before,
 .dog-hero-card::after {
-  content: '';
-  position: absolute;
-  right: clamp(24px, 4.6vw, 62px);
-  bottom: -15px;
-  z-index: 4;
-  width: clamp(90px, 11vw, 150px);
-  height: 22px;
-  border-radius: 999px;
-  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.52), rgba(0, 0, 0, 0));
-  animation: mini-dog-shadow 3.2s ease-in-out infinite;
-  pointer-events: none;
+  display: none;
 }
 
 .dog-photo-frame {
   position: relative;
-  min-height: 390px;
+  min-height: 380px;
   overflow: hidden;
   background-image:
-    radial-gradient(circle at 50% 82%, rgba(0, 0, 0, 0.44), transparent 34%),
+    radial-gradient(ellipse at 50% 94%, rgba(0, 0, 0, 0.52), transparent 31%),
+    radial-gradient(ellipse at 48% 86%, rgba(31, 41, 35, 0.9), rgba(31, 41, 35, 0.36) 34%, transparent 58%),
     url('/assets/dog/real-dog-sit.webp'),
-    linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(250, 204, 21, 0.12));
-  background-size: 72% auto, min(70%, 320px) auto, cover;
+    linear-gradient(135deg, rgba(52, 211, 153, 0.26), rgba(250, 204, 21, 0.1));
+  background-size: 74% auto, 62% 32%, min(72%, 310px) auto, cover;
   background-repeat: no-repeat;
-  background-position: center bottom 18px, center bottom 18px, center;
+  background-position: center bottom 18px, center bottom 0, center bottom 18px, center;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -81,8 +58,9 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 56% 50%, transparent 24%, rgba(0, 0, 0, 0.14) 84%),
-    linear-gradient(90deg, transparent 62%, rgba(7, 10, 9, 0.48));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 28%),
+    linear-gradient(90deg, transparent 66%, rgba(7, 10, 9, 0.46));
+  pointer-events: none;
 }
 
 .dog-hero-hearts {
@@ -103,14 +81,6 @@
 
 .dog-celebrating .dog-photo-frame {
   animation: dog-photo-hop 1.05s ease-out;
-}
-
-.dog-celebrating .dog-hero-card::before {
-  animation: mini-dog-happy 1.05s ease-out, mini-dog-breathe 3.2s ease-in-out 1.05s infinite;
-}
-
-.dog-celebrating .dog-hero-card::after {
-  animation: mini-dog-shadow-hop 1.05s ease-out, mini-dog-shadow 3.2s ease-in-out 1.05s infinite;
 }
 
 .dog-photo-fallback {
@@ -223,10 +193,7 @@
 }
 
 .pet-switch-card,
-.dog-summary-card {
-  min-height: auto;
-}
-
+.dog-summary-card,
 .dog-profile-card,
 .dog-daily-card,
 .dog-food-card,
@@ -306,7 +273,7 @@
 
 .dog-chart-bar {
   position: relative;
-  min-height: 118px;
+  min-height: 112px;
   align-content: end;
   overflow: hidden;
 }
@@ -589,30 +556,6 @@
   100% { opacity: 0; transform: translateY(-28px) scale(1); }
 }
 
-@keyframes mini-dog-breathe {
-  0%, 100% { transform: translateY(0) scale(1) rotate(-0.5deg); }
-  45% { transform: translateY(-3px) scale(1.018, 0.992) rotate(0.8deg); }
-  70% { transform: translateY(0) scale(0.997, 1.004) rotate(-0.4deg); }
-}
-
-@keyframes mini-dog-shadow {
-  0%, 100% { opacity: 0.58; transform: scaleX(1); }
-  45% { opacity: 0.38; transform: scaleX(0.86); }
-}
-
-@keyframes mini-dog-happy {
-  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
-  25% { transform: translateY(-14px) scale(1.05) rotate(-4deg); }
-  50% { transform: translateY(0) scale(0.98, 1.04) rotate(3deg); }
-  70% { transform: translateY(-7px) scale(1.03) rotate(-2deg); }
-}
-
-@keyframes mini-dog-shadow-hop {
-  0%, 100% { opacity: 0.58; transform: scaleX(1); }
-  25% { opacity: 0.28; transform: scaleX(0.62); }
-  50% { opacity: 0.64; transform: scaleX(1.08); }
-}
-
 @media (max-width: 1100px) {
   .dog-care-layout,
   .pet-profile-system,
@@ -622,12 +565,8 @@
 
   .dog-photo-frame {
     min-height: 420px;
-    background-size: 68% auto, min(68%, 340px) auto, cover;
-  }
-
-  .dog-hero-card::before,
-  .dog-hero-card::after {
-    right: 18px;
+    background-size: 68% auto, 58% 30%, min(64%, 340px) auto, cover;
+    background-position: center bottom 20px, center bottom 0, center bottom 20px, center;
   }
 
   .dog-vaccine-form,
@@ -657,19 +596,8 @@
 
   .dog-photo-frame {
     min-height: 360px;
-    background-size: 72% auto, min(72%, 300px) auto, cover;
-    background-position: center bottom 14px, center bottom 14px, center;
-  }
-
-  .dog-hero-card::before {
-    width: 86px;
-    height: 98px;
-    bottom: -10px;
-  }
-
-  .dog-hero-card::after {
-    width: 84px;
-    bottom: -8px;
+    background-size: 76% auto, 68% 30%, min(74%, 300px) auto, cover;
+    background-position: center bottom 16px, center bottom 0, center bottom 16px, center;
   }
 
   .dog-form-grid,
