@@ -117,6 +117,11 @@
   margin-bottom: 24px;
 }
 
+.topbar-intro {
+  display: grid;
+  gap: 7px;
+}
+
 .topbar h1,
 .hero-copy h2,
 .split-panel h2,
@@ -135,6 +140,12 @@
 .topbar h1 {
   margin-top: 6px;
   font-size: 3.4rem;
+}
+
+.topbar-subcopy {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.88rem;
 }
 
 .eyebrow,
@@ -207,6 +218,39 @@
   font-weight: 700;
 }
 
+.account-switcher {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-panel);
+}
+
+.account-switcher svg {
+  margin-left: 6px;
+  color: var(--color-muted);
+}
+
+.account-switcher button {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 0;
+  color: var(--color-muted);
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.account-switcher button[aria-pressed='true'] {
+  color: #101210;
+  background: var(--color-green);
+}
+
 .icon-toggle {
   width: 40px;
   height: 40px;
@@ -254,7 +298,7 @@
   grid-template-columns: minmax(0, 0.9fr) minmax(380px, 1fr);
   align-items: stretch;
   gap: 24px;
-  min-height: 560px;
+  min-height: 500px;
   padding: 28px;
   overflow: hidden;
 }
@@ -758,9 +802,46 @@ button:focus-visible { outline: 2px solid var(--color-green); outline-offset: 2p
 }
 
 @media (max-width: 760px) {
-  .app-main { padding: 16px; }
+  .app-main { padding: 16px; padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
+  .app-rail {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 90;
+    height: auto;
+    padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-border);
+    border-right: 0;
+    background: rgba(15, 17, 16, 0.96);
+    box-shadow: 0 -16px 28px rgba(0, 0, 0, 0.34);
+  }
+  .brand-lockup { display: none; }
+  .nav-list {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+  .nav-button {
+    min-width: 84px;
+    min-height: 52px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .nav-button span {
+    font-size: 0.74rem;
+    line-height: 1.1;
+  }
   .topbar { align-items: flex-start; flex-direction: column; }
+  .topbar-subcopy { font-size: 0.84rem; }
   .account-open-button { width: 100%; justify-content: flex-start; }
+  .account-switcher { width: 100%; justify-content: center; }
   .topbar h1 { font-size: 2.7rem; }
   .hero-copy h2 { font-size: 2.8rem; }
   .quick-grid,

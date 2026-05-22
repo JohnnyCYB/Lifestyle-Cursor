@@ -10,6 +10,7 @@ import DogCare from './components/DogCare'
 import ProfileModal from './components/ProfileModal'
 import { getCurrentUser, isAuthEnabled, signInWithEmail, signOut as authSignOut, signUpWithEmail } from './services/authService'
 import { loadCloudProfile } from './services/cloudProfileService'
+import { supabase } from './services/supabaseClient'
 import './components/NutritionScanner.css'
 import './components/CalendarRewards.css'
 import './App.css'
@@ -93,6 +94,15 @@ function App() {
     void loadUser()
     return () => { active = false }
   }, [authEnabled])
+  useEffect(() => {
+    if (!authEnabled || !supabase) return undefined
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAuthUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [authEnabled])
 
   function switchAccountMode(nextMode) { window.localStorage.setItem(accountModeKey, nextMode); setAccountModeState(nextMode); setSnackReady(false); setSnackFed(false); setLastFoodEntry(null); setActiveView('dashboard'); setPetReaction('idle') }
   function triggerPetReaction(reaction) { if (profile.settings.animations) setPetReaction(reaction ?? 'happy') }
@@ -152,13 +162,19 @@ function App() {
   function switchToDemoFromModal() { switchAccountMode('demo'); setProfileModalOpen(false) }
   const accountDisplayName = profile.demoMode ? 'Demo Player' : (authUser?.user_metadata?.display_name || authUser?.email || profile.userName || 'Player')
   const accountKindLabel = profile.demoMode ? 'Demo Account' : (authUser ? 'Cloud Account' : 'Local Account')
+  const topbarGreeting = `${daypartGreeting()}, ${accountDisplayName}`
+  const topbarSupportCopy = profile.demoMode
+    ? 'Demo mode is enabled. Nothing here affects your main profile.'
+    : activeView === 'dashboard'
+      ? `${accountKindLabel}. Pick one quick action to keep your streak moving.`
+      : `${accountKindLabel}. Your progress saves automatically in this browser.`
 
   const sharedProps = { profile, companion, stageIndex, stageName, evolution, completedToday, unlockedAchievements, weeklyTotal, workoutForm, setWorkoutForm, goalForm, setGoalForm, winFilter, setWinFilter, nutritionFocus, setNutritionFocus, snackReady, snackFed, lastFoodEntry, todayKey, onActivity: addActivity, onCompleteQuest: completeQuest, onSelectPet: selectPet, onToggleSetting: toggleSetting, onTogglePetRoam: togglePetRoam, onResetProfile: resetProfile, onRecommendedWorkout: logGymTemplate, onSaveGymTemplate: saveGymTemplate, onSaveCustomWorkout: saveCustomWorkout, onLogCustomWorkout: (workout) => addActivity({ label: workout.name, points: workout.points, area: 'gym', reaction: 'power', care: { energy: -6, satiety: -3, bond: 5, spark: 6 } }), onAddLifeGoal: addLifeGoal, onCompleteGoal: completeGoal, onDeleteGoal: deleteGoal, onRefillGoals: refillGoalsNow, setActiveView, onFoodLog: handleFoodLog, onFeedSnack: feedPetSnack, onDogCareChange: handleDogCareChange }
 
   return <div className={['app-shell', 'mobile-polish', profile.settings.animations ? 'motion-ok' : 'motion-off', profile.settings.focusMode ? 'focus-mode' : '', profile.demoMode ? 'demo-mode' : 'real-mode'].filter(Boolean).join(' ')}>
     <GlobalPet companion={companion} stageIndex={stageIndex} position={profile.petPosition} motionMode={profile.petMotionMode} petCanMove={petCanMove} reaction={petReaction} onMovePet={movePetTo} />
     <aside className="app-rail" aria-label="Primary navigation"><button className="brand-lockup" type="button" onClick={() => setActiveView('dashboard')}><span className="brand-mark"><PawPrint size={20} /></span><span><strong>Life RPG</strong><small>{profile.demoMode ? 'Demo Account' : 'My Account'}</small></span></button><nav className="nav-list">{navItems.map((item) => { const Icon = item.icon; return <button key={item.id} className="nav-button" type="button" aria-current={activeView === item.id ? 'page' : undefined} onClick={() => setActiveView(item.id)}><Icon size={18} /><span>{item.label}</span></button> })}</nav></aside>
-    <main className="app-main"><header className="topbar" data-no-pet-move="true"><div><span className="eyebrow">Welcome back, {accountDisplayName}</span><h1>{activeTitle(activeView)}</h1></div><div className="topbar-actions"><button className="account-open-button" type="button" data-no-pet-move="true" onClick={openProfileModal}><User size={16} /><span>{accountDisplayName}</span><small>{accountKindLabel}</small></button><AccountSwitcher mode={accountMode} onSwitch={switchAccountMode} /><MetricPill icon={Flame} label={`${profile.streak} day streak`} /><MetricPill icon={Sparkles} label={`${profile.points} pts`} /><button className="icon-toggle" type="button" aria-pressed={profile.settings.animations} onClick={() => toggleSetting('animations')}><Settings2 size={18} /></button></div></header>{renderActiveView(activeView, sharedProps)}</main>
+    <main className="app-main"><header className="topbar" data-no-pet-move="true"><div className="topbar-intro"><span className="eyebrow">{topbarGreeting}</span><h1>{activeTitle(activeView)}</h1><p className="topbar-subcopy">{topbarSupportCopy}</p></div><div className="topbar-actions"><button className="account-open-button" type="button" data-no-pet-move="true" onClick={openProfileModal}><User size={16} /><span>{accountDisplayName}</span><small>{accountKindLabel}</small></button><AccountSwitcher mode={accountMode} onSwitch={switchAccountMode} /><MetricPill icon={Flame} label={`${profile.streak} day streak`} /><MetricPill icon={Sparkles} label={`${profile.points} pts`} /><button className="icon-toggle" type="button" aria-pressed={profile.settings.animations} onClick={() => toggleSetting('animations')}><Settings2 size={18} /></button></div></header>{renderActiveView(activeView, sharedProps)}</main>
     {profileModalOpen && <ProfileModal onClose={closeProfileModal} accountMode={accountMode} authEnabled={authEnabled} authUser={authUser} localDisplayName={profile.userName} onSignIn={handleSignIn} onSignUp={handleSignUp} onSignOut={handleSignOut} onContinueLocal={continueLocalOnly} onSwitchToDemo={switchToDemoFromModal} />}
   </div>
 }
@@ -201,6 +217,7 @@ function normalizeArea(area) { return ['gym', 'nutrition', 'focus', 'life', 'pet
 function reactionForArea(area) { if (area === 'gym') return 'power'; if (area === 'nutrition') return 'happy'; return 'celebrate' }
 function activeTitle(activeView) { return { pets: 'Companions', care: 'Pet Care', dog: 'My Dog', gym: 'Gym', nutrition: 'Nutrition', goals: 'Goals', progress: 'Progress' }[activeView] ?? 'Dashboard' }
 function filterWins(goals, filter) { return filter === 'all' ? goals : goals.filter((goal) => goal.size === filter) }
+function daypartGreeting() { const hour = new Date().getHours(); if (hour < 12) return 'Good morning'; if (hour < 18) return 'Good afternoon'; return 'Good evening' }
 function getNextGoalTemplates(profile, count) { let cursor = profile.goalBacklogCursor ?? 0; const additions = []; for (let index = 0; index < count; index += 1) { const template = starterGoalBacklog[cursor % starterGoalBacklog.length]; additions.push({ ...template, id: makeId('auto-goal'), completed: false, createdAt: 'Auto refill' }); cursor += 1 } return { additions, cursor } }
 function addEasyGoals(profile, count = 3) { const { additions, cursor } = getNextGoalTemplates(profile, count); return { ...profile, goalBacklogCursor: cursor, lifeGoals: [...additions, ...profile.lifeGoals].slice(0, 18), ledger: [makeLedgerEntry(`Added ${additions.length} easy goal${additions.length > 1 ? 's' : ''}`, 0, 'life'), ...profile.ledger].slice(0, 10) } }
 function refillGoalsToMinimum(profile, targetCount = 3) { const openCount = profile.lifeGoals.filter((goal) => !goal.completed).length; return openCount >= targetCount ? profile : addEasyGoals(profile, targetCount - openCount) }
