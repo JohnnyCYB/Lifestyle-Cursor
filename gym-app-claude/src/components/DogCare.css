@@ -667,7 +667,7 @@
 
   .dog-hero-card,
   .dog-card {
-    border-radius: 18px;
+    border-radius: 14px;
   }
 
   .dog-hero-copy,
@@ -675,13 +675,93 @@
     padding: 14px;
   }
 
+  .dog-hero-card {
+    min-height: 0;
+  }
+
+  .dog-command-dashboard {
+    order: 1;
+  }
+
+  .dog-daily-card {
+    order: 2;
+  }
+
+  .dog-summary-card {
+    order: 3;
+  }
+
+  .pet-switch-card,
+  .dog-exercise-card,
+  .dog-food-card {
+    order: 4;
+  }
+
+  .dog-profile-card,
+  .dog-weight-card,
+  .dog-appointment-card,
+  .dog-vaccine-card,
+  .dog-reminder-card,
+  .dog-notes-card {
+    order: 6;
+  }
+
+  .dog-hero-copy {
+    gap: 10px;
+  }
+
+  .dog-hero-copy h2 {
+    font-size: clamp(2rem, 11vw, 3.1rem);
+    line-height: 0.94;
+    letter-spacing: -0.03em;
+  }
+
+  .dog-hero-copy p {
+    font-size: 0.9rem;
+  }
+
   .dog-photo-frame {
-    min-height: 360px;
+    min-height: 280px;
   }
 
   .dog-photo-frame .dog-hero-img {
-    width: min(76%, 300px);
-    margin-bottom: 16px;
+    width: min(68%, 240px);
+    margin-bottom: 10px;
+  }
+
+  .dog-progress-ring {
+    min-height: 36px;
+    padding: 0 10px;
+    gap: 6px;
+  }
+
+  .dog-progress-ring span {
+    font-size: 0.72rem;
+  }
+
+  .dog-chart-bar {
+    min-height: 86px;
+  }
+
+  .dog-card {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .dog-task {
+    min-height: 58px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .dog-reminder,
+  .dog-vaccine {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .dog-summary-card .cs-card {
+    margin-top: 8px;
   }
 
   .dog-form-grid,
@@ -717,5 +797,95 @@
 
   .dog-reminder-actions .secondary-button {
     flex: 1;
+  }
+}
+
+@media (max-width: 430px) {
+  .dog-care-layout {
+    gap: 10px;
+  }
+
+  .dog-card {
+    padding: 10px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+
+  .dog-hero-copy {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .dog-hero-copy h2 {
+    font-size: 1.78rem;
+    line-height: 0.98;
+  }
+
+  .dog-hero-copy p {
+    font-size: 0.82rem;
+  }
+
+  .dog-photo-frame {
+    min-height: 220px;
+  }
+
+  .dog-photo-frame .dog-hero-img {
+    width: min(66%, 210px);
+    margin-bottom: 8px;
+  }
+
+  .dog-hero-stats {
+    gap: 6px;
+  }
+
+  .dog-progress-ring {
+    min-height: 34px;
+    padding: 0 8px;
+  }
+
+  .dog-progress-ring strong {
+    font-size: 0.88rem;
+  }
+
+  .dog-progress-ring span {
+    font-size: 0.66rem;
+  }
+
+  .dog-summary-grid article,
+  .dog-history-list article,
+  .dog-bath-row,
+  .dog-chart-bar {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .dog-chart-bar strong {
+    font-size: 1.2rem;
+  }
+
+  .dog-chart-bar span,
+  .dog-summary-grid article span,
+  .dog-history-list article span {
+    font-size: 0.64rem;
+  }
+
+  .dog-task {
+    min-height: 54px;
+    gap: 8px;
+  }
+
+  .dog-task small {
+    display: none;
+  }
+
+  .dog-reminder h3 {
+    font-size: 0.95rem;
+    line-height: 1.15;
+  }
+
+  .dog-reminder p,
+  .dog-vaccine small {
+    font-size: 0.76rem;
+    line-height: 1.3;
   }
 }

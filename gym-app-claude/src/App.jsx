@@ -9,7 +9,7 @@ import NutritionScanner from './components/NutritionScanner'
 import DogCare from './components/DogCare'
 import ProfileModal from './components/ProfileModal'
 import { getCurrentUser, isAuthEnabled, signInWithEmail, signOut as authSignOut, signUpWithEmail } from './services/authService'
-import { loadCloudProfile } from './services/cloudProfileService'
+import { loadCloudProfile, saveCloudProfile } from './services/cloudProfileService'
 import { supabase } from './services/supabaseClient'
 import './components/NutritionScanner.css'
 import './components/CalendarRewards.css'
@@ -69,6 +69,9 @@ function App() {
   const weeklyTotal = profile.weeklyPoints.reduce((total, day) => total + day, 0)
   const petCanMove = profile.settings.animations && !prefersReducedMotion
   const lastStageRef = useRef(stageIndex)
+  const cloudSaveTimerRef = useRef(null)
+  const cloudHydratingRef = useRef(false)
+  const [cloudNeedsHydration, setCloudNeedsHydration] = useState(false)
 
   useEffect(() => {
     if (petReaction === 'idle') return undefined
@@ -103,6 +106,65 @@ function App() {
     })
     return () => subscription.unsubscribe()
   }, [authEnabled])
+  useEffect(() => () => window.clearTimeout(cloudSaveTimerRef.current), [])
+  useEffect(() => {
+    if (!cloudNeedsHydration || cloudHydratingRef.current || !authEnabled || accountMode !== 'real' || !authUser || profile.demoMode) return undefined
+    let cancelled = false
+    async function hydrateFromCloud() {
+      cloudHydratingRef.current = true
+      try {
+        const { data, error } = await loadCloudProfile(authUser.id)
+        if (cancelled || error) return
+        const displayName = authUser.user_metadata?.display_name || profile.userName || 'Player'
+        const cloudPayload = data?.payload
+        if (cloudPayload && typeof cloudPayload === 'object') {
+          setProfile(() =>
+            normalizeProfile(
+              mergeProfile({
+                ...cloudPayload,
+                userName: data?.display_name || cloudPayload.userName || displayName,
+                demoMode: false,
+              }),
+              'real',
+            ),
+          )
+        } else {
+          const seededPayload = normalizeProfile(
+            mergeProfile({
+              ...profile,
+              userName: displayName,
+              demoMode: false,
+            }),
+            'real',
+          )
+          await saveCloudProfile(authUser.id, seededPayload)
+        }
+      } finally {
+        if (!cancelled) {
+          cloudHydratingRef.current = false
+          setCloudNeedsHydration(false)
+        }
+      }
+    }
+    void hydrateFromCloud()
+    return () => { cancelled = true }
+  }, [accountMode, authEnabled, authUser, cloudNeedsHydration, profile, setProfile])
+  useEffect(() => {
+    if (!authEnabled || !authUser || accountMode !== 'real' || profile.demoMode || cloudHydratingRef.current) return undefined
+    window.clearTimeout(cloudSaveTimerRef.current)
+    cloudSaveTimerRef.current = window.setTimeout(() => {
+      const cloudPayload = normalizeProfile(
+        mergeProfile({
+          ...profile,
+          userName: authUser.user_metadata?.display_name || profile.userName || 'Player',
+          demoMode: false,
+        }),
+        'real',
+      )
+      void saveCloudProfile(authUser.id, cloudPayload)
+    }, 900)
+    return () => window.clearTimeout(cloudSaveTimerRef.current)
+  }, [accountMode, authEnabled, authUser, profile])
 
   function switchAccountMode(nextMode) { window.localStorage.setItem(accountModeKey, nextMode); setAccountModeState(nextMode); setSnackReady(false); setSnackFed(false); setLastFoodEntry(null); setActiveView('dashboard'); setPetReaction('idle') }
   function triggerPetReaction(reaction) { if (profile.settings.animations) setPetReaction(reaction ?? 'happy') }
@@ -128,9 +190,9 @@ function App() {
     if (result.user) {
       setAuthUser(result.user)
       switchAccountMode('real')
-      if (displayName) setProfile((current) => ({ ...current, userName: displayName }))
-      // TODO: Cloud hydration hook will merge remote payload once conflict policy is finalized.
-      await loadCloudProfile(result.user.id)
+      const resolvedName = displayName?.trim() || result.user.user_metadata?.display_name || result.user.email || profile.userName || 'Player'
+      if (!profile.demoMode) setProfile((current) => ({ ...current, userName: resolvedName }))
+      setCloudNeedsHydration(true)
     }
     return result
   }
@@ -139,14 +201,16 @@ function App() {
     if (result.user) {
       setAuthUser(result.user)
       switchAccountMode('real')
-      // TODO: Cloud hydration hook will merge remote payload once conflict policy is finalized.
-      await loadCloudProfile(result.user.id)
+      setCloudNeedsHydration(true)
     }
     return result
   }
   async function handleSignOut() {
     const result = await authSignOut()
     if (!result.error) {
+      window.clearTimeout(cloudSaveTimerRef.current)
+      cloudHydratingRef.current = false
+      setCloudNeedsHydration(false)
       setAuthUser(null)
       switchAccountMode('real')
     }
@@ -162,18 +226,21 @@ function App() {
   function switchToDemoFromModal() { switchAccountMode('demo'); setProfileModalOpen(false) }
   const accountDisplayName = profile.demoMode ? 'Demo Player' : (authUser?.user_metadata?.display_name || authUser?.email || profile.userName || 'Player')
   const accountKindLabel = profile.demoMode ? 'Demo Account' : (authUser ? 'Cloud Account' : 'Local Account')
+  const accountStorageLabel = profile.demoMode
+    ? 'Demo Account: sandbox only.'
+    : authUser
+      ? 'Cloud Account: signed in and saved online.'
+      : 'Local Account: saved on this device only.'
   const topbarGreeting = `${daypartGreeting()}, ${accountDisplayName}`
-  const topbarSupportCopy = profile.demoMode
-    ? 'Demo mode is enabled. Nothing here affects your main profile.'
-    : activeView === 'dashboard'
-      ? `${accountKindLabel}. Pick one quick action to keep your streak moving.`
-      : `${accountKindLabel}. Your progress saves automatically in this browser.`
+  const topbarSupportCopy = activeView === 'dashboard'
+    ? `${accountStorageLabel} Pick one quick action to keep your streak moving.`
+    : accountStorageLabel
 
   const sharedProps = { profile, companion, stageIndex, stageName, evolution, completedToday, unlockedAchievements, weeklyTotal, workoutForm, setWorkoutForm, goalForm, setGoalForm, winFilter, setWinFilter, nutritionFocus, setNutritionFocus, snackReady, snackFed, lastFoodEntry, todayKey, onActivity: addActivity, onCompleteQuest: completeQuest, onSelectPet: selectPet, onToggleSetting: toggleSetting, onTogglePetRoam: togglePetRoam, onResetProfile: resetProfile, onRecommendedWorkout: logGymTemplate, onSaveGymTemplate: saveGymTemplate, onSaveCustomWorkout: saveCustomWorkout, onLogCustomWorkout: (workout) => addActivity({ label: workout.name, points: workout.points, area: 'gym', reaction: 'power', care: { energy: -6, satiety: -3, bond: 5, spark: 6 } }), onAddLifeGoal: addLifeGoal, onCompleteGoal: completeGoal, onDeleteGoal: deleteGoal, onRefillGoals: refillGoalsNow, setActiveView, onFoodLog: handleFoodLog, onFeedSnack: feedPetSnack, onDogCareChange: handleDogCareChange }
 
   return <div className={['app-shell', 'mobile-polish', profile.settings.animations ? 'motion-ok' : 'motion-off', profile.settings.focusMode ? 'focus-mode' : '', profile.demoMode ? 'demo-mode' : 'real-mode'].filter(Boolean).join(' ')}>
     <GlobalPet companion={companion} stageIndex={stageIndex} position={profile.petPosition} motionMode={profile.petMotionMode} petCanMove={petCanMove} reaction={petReaction} onMovePet={movePetTo} />
-    <aside className="app-rail" aria-label="Primary navigation"><button className="brand-lockup" type="button" onClick={() => setActiveView('dashboard')}><span className="brand-mark"><PawPrint size={20} /></span><span><strong>Life RPG</strong><small>{profile.demoMode ? 'Demo Account' : 'My Account'}</small></span></button><nav className="nav-list">{navItems.map((item) => { const Icon = item.icon; return <button key={item.id} className="nav-button" type="button" aria-current={activeView === item.id ? 'page' : undefined} onClick={() => setActiveView(item.id)}><Icon size={18} /><span>{item.label}</span></button> })}</nav></aside>
+    <aside className="app-rail" aria-label="Primary navigation"><button className="brand-lockup" type="button" onClick={() => setActiveView('dashboard')}><span className="brand-mark"><PawPrint size={20} /></span><span><strong>Life RPG</strong><small>{accountKindLabel}</small></span></button><nav className="nav-list">{navItems.map((item) => { const Icon = item.icon; return <button key={item.id} className="nav-button" type="button" aria-current={activeView === item.id ? 'page' : undefined} onClick={() => setActiveView(item.id)}><Icon size={18} /><span>{item.label}</span></button> })}</nav></aside>
     <main className="app-main"><header className="topbar" data-no-pet-move="true"><div className="topbar-intro"><span className="eyebrow">{topbarGreeting}</span><h1>{activeTitle(activeView)}</h1><p className="topbar-subcopy">{topbarSupportCopy}</p></div><div className="topbar-actions"><button className="account-open-button" type="button" data-no-pet-move="true" onClick={openProfileModal}><User size={16} /><span>{accountDisplayName}</span><small>{accountKindLabel}</small></button><AccountSwitcher mode={accountMode} onSwitch={switchAccountMode} /><MetricPill icon={Flame} label={`${profile.streak} day streak`} /><MetricPill icon={Sparkles} label={`${profile.points} pts`} /><button className="icon-toggle" type="button" aria-pressed={profile.settings.animations} onClick={() => toggleSetting('animations')}><Settings2 size={18} /></button></div></header>{renderActiveView(activeView, sharedProps)}</main>
     {profileModalOpen && <ProfileModal onClose={closeProfileModal} accountMode={accountMode} authEnabled={authEnabled} authUser={authUser} localDisplayName={profile.userName} onSignIn={handleSignIn} onSignUp={handleSignUp} onSignOut={handleSignOut} onContinueLocal={continueLocalOnly} onSwitchToDemo={switchToDemoFromModal} />}
   </div>

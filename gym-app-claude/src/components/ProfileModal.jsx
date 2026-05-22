@@ -73,7 +73,7 @@ export default function ProfileModal({
         setErrorText(result.error.message || 'Sign out failed.')
         return
       }
-      setNotice('Signed out. You are now using Local Account.')
+      setNotice('Signed out. Local Account: saved on this device only.')
     } catch (error) {
       setErrorText(error?.message || 'Sign out failed.')
     } finally {
@@ -99,21 +99,21 @@ export default function ProfileModal({
             <Monitor size={17} />
             <div>
               <strong>Local Account</strong>
-              <p>Browser-only save, no sign-in required.</p>
+              <p>Saved on this device only. No sign-in required.</p>
             </div>
           </article>
           <article className="profile-mode-card">
             <Cloud size={17} />
             <div>
               <strong>Cloud Account</strong>
-              <p>Supabase auth enabled {authEnabled ? 'in this app' : 'when env vars are set'}.</p>
+              <p>{authEnabled ? 'Signed in and saved online.' : 'Available when Supabase env vars are set.'}</p>
             </div>
           </article>
           <article className="profile-mode-card">
             <Beaker size={17} />
             <div>
               <strong>Demo Account</strong>
-              <p>Sandbox mode with unlocks and no calendar sync actions.</p>
+              <p>Sandbox only with unlocks and no calendar sync actions.</p>
             </div>
           </article>
         </div>

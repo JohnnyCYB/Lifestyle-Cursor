@@ -36,7 +36,7 @@ export async function saveCloudProfile(userId, payload) {
 export async function loadCloudProfile(userId) {
   if (!supabase || !userId) return { data: null, error: null }
 
-  // TODO: Once conflict policy is finalized, hydrate local profile state from this payload.
+  // TODO: Add selective field-level merge policy if local/cloud conflict handling needs to be granular.
   const { data, error } = await supabase
     .from('profiles')
     .select('payload, display_name, updated_at')
@@ -45,4 +45,3 @@ export async function loadCloudProfile(userId) {
 
   return { data, error }
 }
-
